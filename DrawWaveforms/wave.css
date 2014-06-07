@@ -1,0 +1,41 @@
+body { width: 638px; margin: 0px; padding: 0px; border: 1px solid #01ADED; cursor: default; }
+
+#head { height: 40px; background-color: #3EA8DF; }
+.button {
+    text-decoration: none; cursor: default; text-align: center; margin: 0px; padding: 0px; display: block;
+    width: 75px; height: 40px; line-height: 40px; font-size: 0.9em; float: left; color: white;
+}
+.button:hover { background-color: #3A72BE; }
+
+#wrapper { height: 400px; }
+#board, #display { width: 638px; height: 100%; padding: 0px; margin: 0px; overflow: auto; }
+
+#board ul { list-style-type: none; margin: 0px; padding: 18px 0px 20px 0px; }
+#board li { display: block; height: 20px; padding: 2px 0px 2px 0px; margin: 0px; }
+.selected, li.selected:hover { background-color: #84D48D; }
+#board input {
+    width: 60px; height: 20px; border-width: 0px; float: left; background-color: transparent; color: black;
+    text-align: right; margin: 0px 10px 0px 0px; padding: 0px; font-family: "Georgia"; font-size: 16px;
+}
+#board input:hover { color: #E56758; }
+.h, .l { display: block; width: 19px; height: 19px; float: left; cursor: default; }
+.h.end, .l.end { width: 8px; }
+.h, .h2h { border-top: 1px solid black; }
+.l, .l2l { border-bottom: 1px solid black; }
+.h:hover, .l:hover { background-color: #77BE7F; }
+.h2h, .l2l, .h2l, .l2h { float: left; }
+.h2l, .l2h { width: 1px; height: 20px; background-color: black; }
+.h2h, .l2l { width: 1px; height: 19px; }
+
+#display { background-color: #D5D5D5; display: none; }
+#display canvas {
+    background-color: white; margin: 20px; display: block;
+}
+
+.liHover, li:hover { background-color: #90D7EC; }
+#display img { margin: 20px; }
+#display div {
+    margin: 0px; padding: 0px 20px; height: 28px; background-color: #BED742; color: white; font-size: 0.8em;
+    line-height: 28px;
+}
+.button.disabled, .button.disabled:hover { background-color: #5EA7DD; color: #A0C5E8;}

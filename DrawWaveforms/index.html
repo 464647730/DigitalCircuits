@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- version: 0.5 -->
+<!-- 2014/03/02 -->
+<!--[if IE 6]><html class="ie6"><![endif]-->
+<!--[if IE 7]><html class="ie7"><![endif]-->
+<!--[if IE 8]><html class="ie8"><![endif]-->
+<![if (!IE) | (gt IE 8)]><html><![endif]>
+<head>
+    <meta charset="utf-8"/>
+    <link rel="stylesheet" type="text/css" href="wave.css"/>
+    <script type="text/javascript" src="http://libs.baidu.com/jquery/1.10.2/jquery.min.js"></script>
+    <script type="text/javascript" src="wave.js"></script>
+</head>
+<body>
+    <div id="head">
+        <!--[if lte IE 6]>
+        <a cmd="reset" class="button disabled" href="#">重置</a>
+        <a cmd="create" class="button" href="#">添加</a>
+        <a cmd="drop" class="button" href="#">丢弃</a>
+        <a cmd="add" class="button" href="#">+</a>
+        <a cmd="sub" class="button" href="#">-</a>
+        <a cmd="generate" class="button" href="#">导出</a>
+        <a cmd="download" id="download" class="button" href="#">下载</a>
+        <a cmd="back" class="button disabled" href="#">返回</a>
+        <![endif]-->
+        <![if (!IE) | (gt IE 6)]>
+        <div cmd="reset" class="button disabled">重置</div>
+        <div cmd="create" class="button">添加</div>
+        <div cmd="drop" class="button">丢弃</div>
+        <div cmd="add" class="button">+</div>
+        <div cmd="sub" class="button">-</div>
+        <div cmd="generate" class="button">导出</div>
+        <a cmd="download" id="download" class="button" href="#">下载</a>
+        <div cmd="back" class="button disabled">返回</div>
+        <![endif]>
+    </div>
+    <div id="wrapper">
+        <div id="board"><ul></ul></div>
+        <div id="display"></div>
+    </div>
+</body>
+</html>
