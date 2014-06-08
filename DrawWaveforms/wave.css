@@ -3,7 +3,7 @@ body { width: 638px; margin: 0px; padding: 0px; border: 1px solid #01ADED; curso
 #head { height: 40px; background-color: #3EA8DF; }
 .button {
     text-decoration: none; cursor: default; text-align: center; margin: 0px; padding: 0px; display: block;
-    width: 75px; height: 40px; line-height: 40px; font-size: 0.9em; float: left; color: white;
+    width: 69px; height: 40px; line-height: 40px; font-size: 0.9em; float: left; color: white;
 }
 .button:hover { background-color: #3A72BE; }
 
