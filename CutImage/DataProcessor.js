@@ -80,7 +80,7 @@ ImageCuter.prototype.__getOriginPosition = function(p1, p2, p3, p4, newWidth, ne
 var MyImageData = function(width, height) {
 	this.__width = 0;
 	this.__height = 0;
-	this.data = [];
+	this.data = null;
 	if (width != undefined && height != undefined) {
 		this.setSize(width, height);
 	}
@@ -96,12 +96,11 @@ MyImageData.prototype.setSize = function(newWidth, newHeight) {
 	this.__height = newHeight;
 	this.data = new Uint8ClampedArray(this.__width * this.__height * 4);
 };
-
 MyImageData.prototype.__getFullColor = function(position) {
-	var arrayPosition = (position.x * this.__width + position.y) * 4;
-	if (arrayPosition < 0 || arrayPosition >= (this.__width * this.__height * 4)) {
+	if (position.x < 0 || position.x >= this.__width || position.y < 0 || position.y >= this.__height) {
 		return new Color(0, 0, 0, 255);
 	}
+	var arrayPosition = (position.y * this.__width + position.x) * 4;
 	var color = new Color();
 	color.red = this.data[arrayPosition];
 	color.green = this.data[arrayPosition+1];
@@ -151,9 +150,9 @@ MyImageData.prototype.getColor = function(position) {
 	return color;
 };
 MyImageData.prototype.setColor = function(p, color) {
-	var arrayPosition = (p.x * this.__width + p.y) * 4;
-	this.data[arrayPosition] = color.red;
-	this.data[arrayPosition+1] = color.green;
-	this.data[arrayPosition+2] = color.blue;
-	this.data[arrayPosition+3] = color.alpha;
+	var arrayPosition = (p.y * this.__width + p.x) * 4;
+	this.data[arrayPosition] = Math.round(color.red);
+	this.data[arrayPosition+1] = Math.round(color.green);
+	this.data[arrayPosition+2] = Math.round(color.blue);
+	this.data[arrayPosition+3] = Math.round(color.alpha);
 };
