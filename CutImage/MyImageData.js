@@ -1,27 +1,44 @@
-var MyImageData = function(width, height) {
-	this.__width = 0;
-	this.__height = 0;
-	this.data = null;
-	if (width != undefined && height != undefined) {
-		this.setSize(width, height);
+// canvas提供的imagedata作为图像的数据部分。
+// 这里封装imagedata，以提供一些操作。
+var MyImageData = function(size) {
+	this.imagedata = null;
+	if (size !== undefined) {
+		this.createImageData(size);
 	}
 };
 MyImageData.prototype.getWidth = function() {
-	return this.__width;
+	return this.imagedata.width;
 };
 MyImageData.prototype.getHeight = function() {
-	return this.__height;
+	return this.imagedata.height;
 };
-MyImageData.prototype.setSize = function(newWidth, newHeight) {
-	this.__width = newWidth;
-	this.__height = newHeight;
-	this.data = new Uint8ClampedArray(this.__width * this.__height * 4);
+MyImageData.prototype.setImageData = function(newImageData) {
+	this.imagedata = newImageData;
 };
-MyImageData.prototype.__getFullColor = function(position) {
-	if (position.x < 0 || position.x >= this.__width || position.y < 0 || position.y >= this.__height) {
+MyImageData.prototype.createImageData = function(size) {
+	var canvas = document.createElement("canvas");
+	canvas.width = size.width;
+	canvas.height = size.height;
+	this.imagedata = getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+};
+MyImageData.prototype.readImage = function(image) {
+	var canvas = document.createElement("canvas");
+}
+MyImageData.prototype.getImageData = function() {
+	return this.imagedata;
+};
+MyImageData.prototype.outOfBorder = function(position) {
+	if (position.x < 0 || position.x >= this.getWidth() || position.y < 0 || position.y >= this.getHeight()) {
+		return true;
+	} else {
+		return false;
+	}
+};
+MyImageData.prototype.getColorAtWholeCoordinate = function(position) {
+	if (this.outOfBorder(position)) {
 		return new Color(0, 0, 0, 255);
 	}
-	var arrayPosition = (position.y * this.__width + position.x) * 4;
+	var arrayPosition = (position.y * this.getWidth() + position.x) * 4;
 	var color = new Color();
 	color.red = this.data[arrayPosition];
 	color.green = this.data[arrayPosition+1];
@@ -35,10 +52,10 @@ MyImageData.prototype.getColor = function(position) {
 		p2 = new Point(Math.ceil(position.x), Math.floor(position.y)),
 		p3 = new Point(Math.ceil(position.x), Math.ceil(position.y)),
 		p4 = new Point(Math.floor(position.x), Math.ceil(position.y));
-	var color1 = this.__getFullColor(p1),
-		color2 = this.__getFullColor(p2),
-		color3 = this.__getFullColor(p3),
-		color4 = this.__getFullColor(p4);
+	var color1 = this.getColorAtWholeCoordinate(p1),
+		color2 = this.getColorAtWholeCoordinate(p2),
+		color3 = this.getColorAtWholeCoordinate(p3),
+		color4 = this.getColorAtWholeCoordinate(p4);
 	var A = (position.x - p1.x),
 		B = (position.y - p1.y);
 	var k1, k2, k3, k4;
