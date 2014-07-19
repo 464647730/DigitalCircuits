@@ -3,5 +3,5 @@ function extend(subclass superclass) {
 	F.prototype = superclass.prototype;
 	subclass.prototype = new F();
 	subclass.prototype.constructor = subclass;
-	
-}
+
+};
