@@ -1,35 +1,34 @@
-var SetQuadView = function() {
-	this.setQuadDiv = document.getElementById("setQuadView");
-	this.setQuad = new SetQuad(document.getElementById("setQuadCanvas"));
+var SetQuadView = new View();
+
+SetQuadView.init = function() {
+	this.view = document.getElementById("setQuadView");
 	this.OKButton = document.getElementById("quadSeted");
 	this.ReturnButton = document.getElementById("fromSetQuadToSelectImage");
-	this.controller = null;
+
+	this.setQuad = new SetQuad(document.getElementById("setQuadCanvas"));
 	this.image = null;
 	this.quad = null;
-};
-SetQuadView.prototype.init = function() {
-	var setQuadView = this;
+
+	var that = this;
 	this.OKButton.addEventListener("click", function() {
-		setQuadView.controller.quadSeted();
+		var quad = that.setQuad.getQuad();
+		var myImageData = new MyImageData();
+		console.log(that.image);
+		myImageData.setValueByImage(that.image);
+		console.log(quad);
+		var resultImageData = SmartImageCuter.cut(myImageData, quad[0], quad[1], quad[2], quad[3]);
+		that.gotoView(ResultImageView, { "resultImageData": resultImageData });
 	}, false);
 	this.ReturnButton.addEventListener("click", function() {
-		setQuadView.controller.reSelect();
+		console.log("1");
+		that.gotoView(SelectImageView, {});
+		console.log("2");
 	}, false);
 };
-SetQuadView.prototype.start = function() {
-	this.setQuad.setImage(this.controller.image);
-	this.show();
+
+SetQuadView.beforeDisplay = function() {
+	this.image = this.receivedData["selectedImage"];
+	this.setQuad.setImage(this.image);
 	this.setQuad.start();
 };
-SetQuadView.prototype.setController = function(controller) {
-	this.controller = controller;
-};
-SetQuadView.prototype.show = function() {
-	this.setQuadDiv.style.display = "block";
-};
-SetQuadView.prototype.hide = function() {
-	this.setQuadDiv.style.display = "none";
-};
-SetQuadView.prototype.getQuad = function() {
-	return this.setQuad.getQuadData();
-};
+

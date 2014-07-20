@@ -16,12 +16,6 @@ function getElementTop(element) {
 	}
 	return actualTop;
 }
-function getElementPosition(element) {
-	return {
-		x: getElementLeft(element),
-		y: getElementTop(element)
-	};
-}
 function getDistance(x1, y1, x2, y2) {
 	return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
@@ -30,186 +24,117 @@ var CircleArea = function(centerX, centerY, radius) {
 	this.centerY = centerY;
 	this.radius = radius;
 };
-CircleArea.prototype = {
-	inArea: function(x, y) {
-		if (getDistance(this.centerX, this.centerY, x, y) <= this.radius) {
-			return true;
-		} else {
-			return false;
-		}
+CircleArea.prototype.inArea = function(x, y) {
+	if (getDistance(this.centerX, this.centerY, x, y) <= this.radius) {
+		return true;
+	} else {
+		return false;
 	}
 };
 
-var MouseState = function(x, y, pressed) {
-	this.x = x;
-	this.y = y;
-	this.pressed = pressed;
+/*
+ * 如果Action是NOTHING，则界面不需要刷新
+ * 如果Action是DRAG，则有可能刷新
+ * 如果是其他，则界面需要刷新
+ */
+var Action = {
+	NOTHING: 0, // 没有状态变化
+	ENTER: 1, // 鼠标进入区域
+	LEAVE: 2, // 鼠标在非DRAGGING状态下离开区域
+	PICK: 3, // 鼠标在区域内，且按下按键
+	DRAG: 4, // 发生在PICK之后，鼠标按键按下
+	DROP: 5 // 发生在DRAG之后，鼠标按键释放
 };
-MouseState.prototype.setValue = function(other) {
-	this.x = other.x;
-	this.y = other.y;
-	this.pressed = other.pressed;
+
+var ListeningArea = function(area) {
+	this.area = area; // 监听区域
+	this.lastState = ListeningArea.State.START; // 初始状态
 };
-var MouseAction = function(target, type) {
-	this.target = target;
-	this.type = type;
-	this.dx = null;
-	this.dy = null;
+ListeningArea.State = {
+	START: 0, // 初始状态，仅仅在初始化时赋值。它的本质意义是，我们不知道此时的真实状态。
+	INSIDE: 1, // 鼠标位于区域内部，并且鼠标按键没有按下
+	OUTSIDE: 2, // 鼠标位于区域外，但是鼠标按键无法判断
+	DRAGGING: 3 // 鼠标按键已经按下，但是是否在区域内无法判断
 };
-var MouseActionsGenerator = function(elem, responser) {
-	this.elem = elem;
-	this.responser = responser;
-	this.elemPosition = getElementPosition(elem);
-	this.previousMouseState = new MouseState(this.elemPosition.x, this.elemPosition.y, false);
-	this.currentMouseState = new MouseState(this.elemPosition.x, this.elemPosition.y, false);
-	this.action = new MouseAction();
-};
-MouseActionsGenerator.prototype = {
-	init: function() {
-		var mouseActionsGenerator = this;
-		this.elem.addEventListener("mousemove", function(event) {
-			mouseActionsGenerator.previousMouseState.setValue(mouseActionsGenerator.currentMouseState);
-			mouseActionsGenerator.currentMouseState.x = event.pageX - mouseActionsGenerator.elemPosition.x;
-			mouseActionsGenerator.currentMouseState.y = event.pageY - mouseActionsGenerator.elemPosition.y;
-			mouseActionsGenerator.dataUpdated();
-		}, false);
-		this.elem.addEventListener("mousedown", function(event) {
-			mouseActionsGenerator.previousMouseState.setValue(mouseActionsGenerator.currentMouseState);
-			mouseActionsGenerator.currentMouseState.pressed = true;
-			mouseActionsGenerator.dataUpdated();
-		}, false);
-		this.elem.addEventListener("mouseup", function(event) {
-			mouseActionsGenerator.previousMouseState.setValue(mouseActionsGenerator.currentMouseState);
-			mouseActionsGenerator.currentMouseState.pressed = false;
-			mouseActionsGenerator.dataUpdated();
-		}, false);
-	},
-	dataUpdated: function() {
-		this.elemPosition = getElementPosition(this.elem);
-		this.detectAction();
-		if (this.action.target !== null) {
-			this.responser.mouseActionTriggered(this.action);
-		}
-	},
-	detectAction: function() {
-		var area;
-		var previous = { inArea: null, pressed: this.previousMouseState.pressed }, current = { inArea: null, pressed: this.currentMouseState.pressed };
-		for (var id in this.responser.responseAreas) {
-			area = this.responser.responseAreas[id].area;
-			previous.inArea = area.inArea(this.previousMouseState.x, this.previousMouseState.y);
-			current.inArea = area.inArea(this.currentMouseState.x, this.currentMouseState.y);
-			if (previous.inArea === false) {
-				if (current.inArea === true) {
-					this.action.target = id;
-					this.action.type = "mouseenter";
-					return;
+
+ListeningArea.prototype.detectAction = function(x, y, keyPressed) {
+	var inside = this.area.inArea(x, y);
+	var action;
+	switch (this.lastState) {
+		case ListeningArea.State.START:
+			if (inside === true) {
+				if (keyPressed === true) {
+					action = Action.PICK;
+				} else {
+					action = Action.ENTER;
 				}
 			} else {
-				if (current.inArea === false) {
-					this.action.target = id;
-					this.action.type = "mouseleave";
-					return;
-				} else {
-					if (previous.pressed === false && current.pressed === true) {
-						this.action.target = id;
-						this.action.type = "mousepress";
-						return;
-					}
-					if (previous.pressed === true && current.pressed === false) {
-						this.action.target = id;
-						this.action.type = "mouserelease";
-						return;
-					}
-					if (previous.pressed === true && current.pressed === true) {
-						this.action.target = id;
-						this.action.type = "mousedrag";
-						this.action.dx = this.currentMouseState.x - this.previousMouseState.x;
-						this.action.dy = this.currentMouseState.y - this.previousMouseState.y;
-						return;
-					}
-				}
+				action = Action.NOTHING;
 			}
-		}
-		this.action.target = null;
+			break;
+		case ListeningArea.State.INSIDE:
+			if (inside === true) {
+				if (keyPressed === true) {
+					action = Action.PICK;
+				} else {
+					action = Action.NOTHING;
+				}
+			} else {
+				action = Action.LEAVE;
+			}
+		case ListeningArea.State.OUTSIDE:
+			if (inside === true) {
+				action = Action.ENTER;
+			} else {
+				action = Action.NOTHING;
+			}
+		case ListeningArea.State.DRAGGING:
+			if (keyPressed === true) {
+				action = Action.DRAG;
+			} else {
+				action = Action.DROP;
+			}
+		default:
 	}
 };
 
-var ResponseCircle = function(container, area) {
-	this.container = container;
-	this.area = area;
-	this.mouseState = "mouseout";
-};
-ResponseCircle.prototype = {
-	mouseActionTriggered: function(action) {
-		switch (action.type) {
-			case "mouseenter": this.onMouseEnter(); break;
-			case "mouseleave": this.onMouseLeave(); break;
-			case "mousepress": this.onMousePress(); break;
-			case "mouserelease": this.onMouseRelease(); break;
-			default:
-		}
-	},
-	moveTo: function(x, y) {
-		this.area.centerX = x;
-		this.area.centerY = y;
-	},
-	refresh: function() {
-		switch (this.mouseState) {
-			case "mousein":
-				this.drawOnCircle(); break;
-			case "mouseout":
-				this.drawOffCircle(); break;
-			case "mousepress":
-				this.drawDragCircle(); break;
-			default:
-		}
-	},
-	drawOnCircle: function() {
-		var ctx = this.container.canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.arc(this.area.centerX, this.area.centerY, this.area.radius, 0, Math.PI * 2, true);
-		ctx.lineWidth = 2.0;
-		ctx.strokeStyle = "#0099cc";
-		ctx.stroke();
-	},
-	drawOffCircle: function() {
-		var ctx = this.container.canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.arc(this.area.centerX, this.area.centerY, this.area.radius, 0, Math.PI * 2, true);
-		ctx.lineWidth = 2.0;
-		ctx.strokeStyle = "#ffffff";
-		ctx.stroke();
-	},
-	drawDragCircle: function() {
-		var ctx = this.container.canvas.getContext("2d");
-		ctx.beginPath();
-		ctx.arc(this.area.centerX, this.area.centerY, this.area.radius, 0, Math.PI * 2, true);
-		ctx.lineWidth = 2.0;
-		ctx.strokeStyle = "#ffff00";
-		ctx.stroke();
-	},
-	onMouseEnter: function() {
-		this.mouseState = "mousein";
-		this.drawOnCircle();
-	},
-	onMouseLeave: function() {
-		this.mouseState = "mouseout";
-		this.drawOffCircle();
-	},
-	onMousePress: function() {
-		this.mouseState = "mousepress";
-		this.drawDragCircle();
-	},
-	onMouseRelease: function() {
-		this.mouseState = "mousein";
-		this.drawOnCircle();
-	}
-};
 var SetQuad = function(canvas) {
 	this.canvas = canvas;
-	this.mouseActionsGenerator = new MouseActionsGenerator(canvas, this);
 	this.quad = new Array(4);
-	this.responseAreas = {};
+	this.areaList = [];
+	this.lastEvent = null;
+};
+SetQuad.prototype.init = function() {
+	this.quad[0] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.25 };
+	this.quad[1] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.25 };
+	this.quad[2] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.75 };
+	this.quad[3] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.75 };
+	this.areaList.push(new CircleArea(this.quad[0].x, this.quad[0].y, 10));
+	this.areaList.push(new CircleArea(this.quad[1].x, this.quad[1].y, 10));
+	this.areaList.push(new CircleArea(this.quad[2].x, this.quad[2].y, 10));
+	this.areaList.push(new CircleArea(this.quad[3].x, this.quad[3].y, 10));
+	var that = this;
+	this.canvas.addEventListener("mousemove", function(event) {
+		that.eventHandler(event);
+	}, false);
+	this.canvas.addEventListener("mousedown", function(event) {
+		that.eventHandler(event);
+	}, false);
+	this.canvas.addEventListener("mouseup", function(event) {
+		that.eventHandler(event);
+	}, false);
+};
+SetQuad.prototype.eventHandler = function(event) {
+	var x = event.pageX - getElementLeft(this.canvas);
+	var y = event.pageY - getElementTop(this.canvas);
+	var keyPressed = event.button === 1;
+	var action;
+	for (area in this.areaList) {
+		action = area.detectAction(x, y, keyPressed);
+		if (action !== Action.NOTHING) {
+			;
+		}
+	}
 };
 SetQuad.prototype = {
 	start: function() {
@@ -377,7 +302,7 @@ SetQuad.prototype = {
 		ctx.strokeStyle = "#0066cc";
 		ctx.stroke();
 	},
-	getQuadData: function() {
+	getQuad: function() {
 		return this.quad;
 	},
 	setImage: function(image) {

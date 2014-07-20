@@ -12,8 +12,27 @@ MyImageData.prototype.getWidth = function() {
 MyImageData.prototype.getHeight = function() {
 	return this.imagedata.height;
 };
-MyImageData.prototype.setImageData = function(newImageData) {
+MyImageData.prototype.setValueByImageData = function(newImageData) {
 	this.imagedata = newImageData;
+};
+MyImageData.prototype.setValueByImage = function(image) {
+	var canvas = document.createElement("canvas");
+	canvas.width = image.width;
+	canvas.height = image.height;
+	var context = canvas.getContext("2d");
+	context.drawImage(image, 0, 0);
+	this.imagedata = context.getImageData(0, 0, canvas.width, canvas.height);;
+};
+MyImageData.prototype.toImage = function() {
+	var image = new Image();
+	image.src = this.toDataURL();
+	return image;
+};
+MyImageData.prototype.toDataURL = function() {
+	var canvas = document.createElement("canvas");
+	var context = canvas.getContext("2d");
+	context.putImageData(this.imagedata);
+	return canvas.toDataURL("image/png");
 };
 MyImageData.prototype.createImageData = function(size) {
 	var canvas = document.createElement("canvas");

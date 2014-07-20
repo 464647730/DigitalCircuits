@@ -2,6 +2,8 @@
 <html>
 <head>
 	<meta charset="utf-8"/>
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<script type="text/javascript" src="View.js"></script>
 	<script type="text/javascript" src="ImageTransformer.js"></script>
 	<script type="text/javascript" src="ImageCuter.js"></script>
 	<script type="text/javascript" src="MyImageData.js"></script>
@@ -10,29 +12,29 @@
 	<script type="text/javascript" src="SetQuad.js"></script>
 	<script type="text/javascript" src="SetQuadView.js"></script>
 	<script type="text/javascript" src="ResultImageView.js"></script>
-	<script type="text/javascript" src="Controller.js"></script>
 	<script type="text/javascript">
 		window.addEventListener("DOMContentLoaded", function() {
+			SelectImageView.init();
+			SetQuadView.init();
+			ResultImageView.init();
+			SelectImageView.show();
 		}, false);
 	</script>
-	<style type="text/css">
-		#setQuadCanvas { padding: 0px; border-width: 0px; }
-	</style>
 </head>
 <body>
-	<div id="selectImageView">
+	<div id="selectImageView" class="view">
 		<span>打开本地文件：</span>
 		<input type="file" id="selectImage" accept="image/*"></input>
-		<img id="dispSelectedImage"></img>
+		<div id="dispSelectedImageNode"></div>
 		<button id="imageSelected">编辑</button>
 	</div>
-	<div id="setQuadView">
+	<div id="setQuadView" class="view">
 		<canvas id="setQuadCanvas"></canvas>
 		<button id="quadSeted">确定</button>
 		<button id="fromSetQuadToSelectImage">重新选择图片</button>
 	</div>
-	<div id="resultImageView">
-		<img id="resultImageNode"/>
+	<div id="resultImageView" class="view">
+		<div id="resultImageNode"></div>
 		<a id="saveImage" type="image/png">保存</a>
 		<button id="fromresultImageToSelectImage">重新选择图片</button>
 	</div>
