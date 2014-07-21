@@ -9,3 +9,8 @@ var Color = function(red, green, blue, alpha) {
 var Size = function(width, height) {
 	this.width = width; this.height = height;
 };
+
+var Vector = function(x, y) {
+	this.x = x;
+	this.y = y;
+};
