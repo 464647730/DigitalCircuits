@@ -81,18 +81,21 @@ ListeningArea.prototype.detectActionAndUpdateState = function(x, y, keyPressed) 
 			} else {
 				action = Action.LEAVE;
 			}
+			break;
 		case ListeningArea.State.OUTSIDE:
 			if (inside === true) {
 				action = Action.ENTER;
 			} else {
 				action = Action.NOTHING;
 			}
+			break;
 		case ListeningArea.State.DRAGGING:
 			if (keyPressed === true) {
 				action = Action.DRAG;
 			} else {
 				action = Action.DROP;
 			}
+			break;
 		default:
 	}
 	this.updateState(inside, action);
@@ -112,7 +115,7 @@ ListeningArea.prototype.updateState = function(isInside, action) {
 			this.lastState = ListeningArea.State.DRAGGING;
 			break;
 		case Action.DROP:
-			if (this.area.inArea(x, y)) {
+			if (isInside) {
 				this.lastState = ListeningArea.State.INSIDE;
 			} else {
 				this.lastState = ListeningArea.State.OUTSIDE;
@@ -130,41 +133,56 @@ var SetQuad = function(canvas) {
 	this.canvas = canvas;
 	this.context = this.canvas.getContext("2d");
 	this.quad = new Array(4);
-	this.areaList = [];
+	this.areaList = new Array(4);
 	this.relativePosition = { dx: 0, dy: 0 };
 	this.lastEvent = null;
+	this.keyPressed = false;
+};
+SetQuad.MouseEventType = {
+	KEYDOWN: 0,
+	KEYUP: 1,
+	MOVE: 2
 };
 SetQuad.prototype.init = function() {
-	var quad = new Array(4);
-	this.quad[0] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.25 };
-	this.quad[1] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.25 };
-	this.quad[2] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.75 };
-	this.quad[3] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.75 };
-	this.areaList.push(new ListeningArea(new CircleArea(this.quad[0].x, this.quad[0].y, 10)));
-	this.areaList.push(new ListeningArea(new CircleArea(this.quad[1].x, this.quad[1].y, 10)));
-	this.areaList.push(new ListeningArea(new CircleArea(this.quad[2].x, this.quad[2].y, 10)));
-	this.areaList.push(new ListeningArea(new CircleArea(this.quad[3].x, this.quad[3].y, 10)));
 	var that = this;
 	this.canvas.addEventListener("mousemove", function(event) {
-		that.eventHandler(event);
+		that.eventHandler(event, SetQuad.MouseEventType.MOVE);
 	}, false);
 	this.canvas.addEventListener("mousedown", function(event) {
-		that.eventHandler(event);
+		that.eventHandler(event, SetQuad.MouseEventType.KEYDOWN);
 	}, false);
 	this.canvas.addEventListener("mouseup", function(event) {
-		that.eventHandler(event);
+		that.eventHandler(event, SetQuad.MouseEventType.KEYUP);
 	}, false);
 };
-SetQuad.prototype.eventHandler = function(event) {
+SetQuad.prototype.setData = function() {
+	this.quad[0] = new Point(this.canvas.width * 0.25, this.canvas.height * 0.25);
+	this.quad[1] = new Point(this.canvas.width * 0.75, this.canvas.height * 0.25);
+	this.quad[2] = new Point(this.canvas.width * 0.75, this.canvas.height * 0.75);
+	this.quad[3] = new Point(this.canvas.width * 0.25, this.canvas.height * 0.75);
+	this.areaList[0] = new ListeningArea(new CircleArea(this.quad[0].x, this.quad[0].y, 10));
+	this.areaList[1] = new ListeningArea(new CircleArea(this.quad[1].x, this.quad[1].y, 10));
+	this.areaList[2] = new ListeningArea(new CircleArea(this.quad[2].x, this.quad[2].y, 10));
+	this.areaList[3] = new ListeningArea(new CircleArea(this.quad[3].x, this.quad[3].y, 10));
+};
+SetQuad.prototype.eventHandler = function(event, mouseeventtype) {
 	var x = event.pageX - getElementLeft(this.canvas);
 	var y = event.pageY - getElementTop(this.canvas);
-	var keyPressed = (event.button === 1);
+	if (mouseeventtype === SetQuad.MouseEventType.KEYDOWN) {
+		this.keyPressed = true;
+	} else if (mouseeventtype === SetQuad.MouseEventType.KEYUP) {
+		this.keyPressed = false;
+	}
 	var action;
 	var i;
 	var len = this.areaList.length;
-	for (i = 0; i <=len; i++) {
-		area = this.areaList[i];
-		action = area.detectActionAndUpdateState(x, y, keyPressed);
+	for (i = 0; i < len; i++) {
+		action = this.areaList[i].detectActionAndUpdateState(x, y, this.keyPressed);
+		if (action === Action.PICK) {
+			console.log("pick");
+		} if (action === Action.DROP) {
+			console.log("drop");
+		}
 		this.updateQuad(i, x, y, action);
 	}
 };
@@ -190,8 +208,10 @@ SetQuad.prototype.updateQuad = function(which, x, y, action) {
 SetQuad.prototype.refresh = function() {
 	this.clearAll();
 	this.drawQuad();
-	for (area in this.areaList) {
-		this.drawArea(area);
+	var i;
+	var len = this.areaList.length;
+	for (i = 0; i < len; i++) {
+		this.drawArea(this.areaList[i]);
 	}
 };
 SetQuad.prototype.clearAll = function() {
@@ -210,7 +230,6 @@ SetQuad.prototype.drawQuad = function() {
 };
 SetQuad.prototype.drawArea = function(area) {
 	this.context.beginPath();
-	this.context.moveTo(area.area.centerX, area.area.centerY);
 	this.context.arc(area.area.centerX, area.area.centerY, area.area.radius, 0, Math.PI * 2, true);
 	switch (area.lastState) {
 		case ListeningArea.State.START:
@@ -225,8 +244,9 @@ SetQuad.prototype.drawArea = function(area) {
 			this.context.stroke();
 			break;
 		case ListeningArea.State.DRAGGING:
-			this.context.fillStyle = "blue";
-			this.context.fill();
+			this.context.lineWidth = 4.0;
+			this.context.strokeStyle = "blue";
+			this.context.stroke();
 			break;
 		default:
 	}
@@ -240,7 +260,10 @@ SetQuad.onLineLeft = function(A, B, C) {
 	}
 };
 SetQuad.prototype.inLimit = function(which, x, y) {
-	var inLimit;
+	var inLimit = this.inside(x, y) && this.farEnough(which, x, y);
+	if (inLimit === false) {
+		return false;
+	}
 	switch (which) {
 		case 0:
 			inLimit = this.leftTopInLimit(x, y);
@@ -250,197 +273,65 @@ SetQuad.prototype.inLimit = function(which, x, y) {
 			break;
 		case 2:
 			inLimit = this.rightBottomInLimit(x, y);
+			console.log("rightBottomInLimit", inLimit);
 			break;
 		case 3:
 			inLimit = this.leftBottomInLimit(x, y);
+			console.log("leftBottomInLimit", inLimit);
 			break;
 		default:
 	}
 	return inLimit;
 };
 SetQuad.prototype.inside = function(x, y) {
-	
-}
-SetQuad.prototype.leftTopInLimit = function(x, y) {
-	if ()
-}
-SetQuad.prototype.
-SetQuad.prototype.
-SetQuad.prototype.
-SetQuad.prototype = {
-	start: function() {
-		quad[0] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.25 };
-		quad[1] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.25 };
-		quad[2] = { x: this.canvas.width * 0.75, y: this.canvas.height * 0.75 };
-		quad[3] = { x: this.canvas.width * 0.25, y: this.canvas.height * 0.75 };
-		var leftTop = new CircleArea(quad[0].x, quad[0].y, 10);
-		var rightTop = new CircleArea(quad[1].x, quad[1].y, 10);
-		var rightBottom = new CircleArea(quad[2].x, quad[2].y, 10);
-		var leftBottom = new CircleArea(quad[3].x, quad[3].y, 10);
-		this.responseAreas = {
-			"leftTop": new ResponseCircle(this, leftTop),
-			"rightTop": new ResponseCircle(this, rightTop),
-			"rightBottom": new ResponseCircle(this, rightBottom),
-			"leftBottom": new ResponseCircle(this, leftBottom)
-		};
-		this.mouseActionsGenerator.init();
-		this.refresh();
-	},
-	mouseActionTriggered: function(action) {
-		if (action.type === "mousedrag") {
-			this.onResponseAreaDragged(action);
-		} else {
-			this.responseAreas[action.target].mouseActionTriggered(action);
+	return (x >= 0 && x < this.canvas.width && y >= 0 && y < this.canvas.height);
+};
+SetQuad.prototype.farEnough = function(which, x, y) {
+	var i, len = this.quad.length, radiusX2 = this.areaList[0].area.radius * 2;
+	for (i = 0; i < len; i++) {
+		if (i !== which) {
+			if (getDistance(this.quad[i].x, this.quad[i].y, x, y) <= radiusX2) {
+				return false;
+			}
 		}
-	},
-	onResponseAreaDragged: function(action) {
-		if (this.inLimit(action)) {
-			this.updateQuad(action);
-			this.updateResponseAreas();
-			this.refresh();
-		}
-	},
-	inLimit: function(action) {
-		var inLimit = null;
-		switch (action.target) {
-			case "leftTop":
-				inLimit = this.leftTopInLimit(action.dx, action.dy); break;
-			case "rightTop":
-				inLimit = this.rightTopInLimit(action.dx, action.dy); break;
-			case "rightBottom":
-				inLimit = this.rightBottomInLimit(action.dx, action.dy); break;
-			case "leftBottom":
-				inLimit = this.leftBottomInLimit(action.dx, action.dy); break;
-			default:
-		}
-		return inLimit;
-	},
-	leftTopInLimit: function(dx, dy) {
-		var area = this.responseAreas["leftTop"].area;
-		var E = {
-			x: dx + area.centerX,
-			y: dy + area.centerY
-		};
-		var ER = {
-			x: dx + area.centerX + area.radius,
-			y: dy + area.centerY + area.radius
-		};
-		var A = { x: 0, y: this.quad[3].y };
-		var B = { x: this.quad[3].x, y: this.quad[3].y };
-		var C = { x: this.quad[1].x, y: this.quad[1].y };
-		var D = { x: this.quad[1].x, y:0 };
-		if (E.x >= 0 && E.y >= 0 && onLineLeft(A, B, ER) && onLineLeft(B, C, ER) && onLineLeft(C, D, ER)) {
-			return true;
-		} else {
-			return false;
-		}
-	},
-	rightTopInLimit: function(dx, dy) {
-		var area = this.responseAreas["rightTop"].area;
-		var E = {
-			x: dx + area.centerX,
-			y: dy + area.centerY
-		};
-		var ER = {
-			x: dx + area.centerX - area.radius,
-			y: dy + area.centerY + area.radius
-		};
-		var A = { x: this.quad[0].x, y: 0 };
-		var B = { x: this.quad[0].x, y: this.quad[0].y };
-		var C = { x: this.quad[2].x, y: this.quad[2].y };
-		var D = { x: this.canvas.width, y: this.quad[2].y };
-		if (E.x <= this.canvas.width && E.y >= 0 && onLineLeft(A, B, ER) && onLineLeft(B, C, ER) && onLineLeft(C, D, ER)) {
-			return true;
-		} else {
-			return false;
-		}
-	},
-	rightBottomInLimit: function(dx, dy) {
-		var area = this.responseAreas["rightBottom"].area;
-		var E = {
-			x: dx + area.centerX,
-			y: dy + area.centerY
-		};
-		var ER = {
-			x: dx + area.centerX - area.radius,
-			y: dy + area.centerY - area.radius
-		};
-		var A = { x: this.canvas.width, y: this.quad[1].y };
-		var B = { x: this.quad[1].x, y: this.quad[1].y };
-		var C = { x: this.quad[3].x, y: this.quad[3].y };
-		var D = { x: this.quad[3].x, y: this.canvas.height };
-		if (E.x <= this.canvas.width && E.y <= this.canvas.height && onLineLeft(A, B, ER) && onLineLeft(B, C, ER) && onLineLeft(C, D, ER)) {
-			return true;
-		} else {
-			return false;
-		}
-	},
-	leftBottomInLimit: function(dx, dy) {
-		var area = this.responseAreas["leftBottom"].area;
-		var E = {
-			x: dx + area.centerX,
-			y: dy + area.centerY
-		};
-		var ER = {
-			x: dx + area.centerX + area.radius,
-			y: dy + area.centerY - area.radius
-		};
-		var A = { x: this.quad[2].x, y: this.canvas.height };
-		var B = { x: this.quad[2].x, y: this.quad[2].y };
-		var C = { x: this.quad[0].x, y: this.quad[0].y };
-		var D = { x: 0, y: this.quad[0].y };
-		if (E.x >= 0 && E.y <= this.canvas.height && onLineLeft(A, B, ER) && onLineLeft(B, C, ER) && onLineLeft(C, D, ER)) {
-			return true;
-		} else {
-			return false;
-		}
-	},
-	updateQuad: function(action) {
-		switch (action.target) {
-			case "leftTop":
-				this.quad[0].x += action.dx; this.quad[0].y += action.dy; break;
-			case "rightTop":
-				this.quad[1].x += action.dx; this.quad[1].y += action.dy; break;
-			case "rightBottom":
-				this.quad[2].x += action.dx; this.quad[2].y += action.dy; break;
-			case "leftBottom":
-				this.quad[3].x += action.dx; this.quad[3].y += action.dy; break;
-			default:
-		}
-	},
-	updateResponseAreas: function() {
-		this.responseAreas["leftTop"].moveTo(this.quad[0].x, this.quad[0].y);
-		this.responseAreas["rightTop"].moveTo(this.quad[1].x, this.quad[1].y);
-		this.responseAreas["rightBottom"].moveTo(this.quad[2].x, this.quad[2].y);
-		this.responseAreas["leftBottom"].moveTo(this.quad[3].x, this.quad[3].y);
-	},
-	refresh: function() {
-		this.drawQuad();
-		for (var areaId in this.responseAreas) {
-			this.responseAreas[areaId].refresh();
-		}
-	},
-	drawQuad: function() {
-		var ctx = this.canvas.getContext("2d");
-		ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-		ctx.beginPath();
-		ctx.moveTo(this.quad[0].x, this.quad[0].y);
-		ctx.lineTo(this.quad[1].x, this.quad[1].y);
-		ctx.lineTo(this.quad[2].x, this.quad[2].y);
-		ctx.lineTo(this.quad[3].x, this.quad[3].y);
-		ctx.lineTo(this.quad[0].x, this.quad[0].y);
-		ctx.lineWidth = 2.0;
-		ctx.strokeStyle = "#0066cc";
-		ctx.stroke();
-	},
-	getQuad: function() {
-		return this.quad;
-	},
-	setImage: function(image) {
-		this.canvas.width = image.width;
-		this.canvas.height = image.height;
-		var url = "url(" + image.src + ")";
-		this.canvas.style.backgroundImage = url;
 	}
+	return true;
+};
+SetQuad.prototype.leftTopInLimit = function(x, y) {
+	var p = new Point(x, y);
+	return (SetQuad.onLineLeft(this.quad[3], this.quad[2], p)
+		&& SetQuad.onLineLeft(this.quad[2], this.quad[1], p)
+		&& SetQuad.onLineLeft(this.quad[3], this.quad[1], p));
+};
+SetQuad.prototype.rightTopInLimit = function(x, y) {
+	var p = new Point(x, y);
+	return (SetQuad.onLineLeft(this.quad[0], this.quad[3], p)
+		&& SetQuad.onLineLeft(this.quad[3], this.quad[2], p)
+		&& SetQuad.onLineLeft(this.quad[0], this.quad[2], p));
+};
+SetQuad.prototype.rightBottomInLimit = function(x, y) {
+	var p = new Point(x, y);
+	return (SetQuad.onLineLeft(this.quad[1], this.quad[0], p)
+		&& SetQuad.onLineLeft(this.quad[0], this.quad[3], p)
+		&& SetQuad.onLineLeft(this.quad[1], this.quad[3], p));
+};
+SetQuad.prototype.leftBottomInLimit = function(x, y) {
+	var p = new Point(x, y);
+	return (SetQuad.onLineLeft(this.quad[2], this.quad[1], p)
+		&& SetQuad.onLineLeft(this.quad[1], this.quad[0], p)
+		&& SetQuad.onLineLeft(this.quad[2], this.quad[0], p));
+};
+SetQuad.prototype.getQuad = function() {
+	return this.quad;
+};
+SetQuad.prototype.setImage = function(image) {
+	console.log(image.width);
+	console.log(image.height);
+	this.canvas.width = image.width;
+	this.canvas.height = image.height;
+	var url = "url(" + image.src + ")";
+	this.canvas.style.backgroundImage = url;
+	this.setData();
+	this.refresh();
 };
 

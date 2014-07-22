@@ -31,14 +31,14 @@ MyImageData.prototype.toImage = function() {
 MyImageData.prototype.toDataURL = function() {
 	var canvas = document.createElement("canvas");
 	var context = canvas.getContext("2d");
-	context.putImageData(this.imagedata);
+	context.putImageData(this.imagedata, 0, 0);
 	return canvas.toDataURL("image/png");
 };
 MyImageData.prototype.createImageData = function(size) {
 	var canvas = document.createElement("canvas");
 	canvas.width = size.width;
 	canvas.height = size.height;
-	this.imagedata = getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+	this.imagedata = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
 };
 MyImageData.prototype.readImage = function(image) {
 	var canvas = document.createElement("canvas");
@@ -59,10 +59,10 @@ MyImageData.prototype.getColorAtWholeCoordinate = function(position) {
 	}
 	var arrayPosition = (position.y * this.getWidth() + position.x) * 4;
 	var color = new Color();
-	color.red = this.data[arrayPosition];
-	color.green = this.data[arrayPosition+1];
-	color.blue = this.data[arrayPosition+2];
-	color.alpha = this.data[arrayPosition+3];
+	color.red = this.imagedata.data[arrayPosition];
+	color.green = this.imagedata.data[arrayPosition+1];
+	color.blue = this.imagedata.data[arrayPosition+2];
+	color.alpha = this.imagedata.data[arrayPosition+3];
 	return color;
 };
 MyImageData.prototype.getColor = function(position) {
@@ -108,8 +108,8 @@ MyImageData.prototype.getColor = function(position) {
 };
 MyImageData.prototype.setColor = function(p, color) {
 	var arrayPosition = (p.y * this.__width + p.x) * 4;
-	this.data[arrayPosition] = Math.round(color.red);
-	this.data[arrayPosition+1] = Math.round(color.green);
-	this.data[arrayPosition+2] = Math.round(color.blue);
-	this.data[arrayPosition+3] = Math.round(color.alpha);
+	this.imagedata.data[arrayPosition] = Math.round(color.red);
+	this.imagedata.data[arrayPosition+1] = Math.round(color.green);
+	this.imagedata.data[arrayPosition+2] = Math.round(color.blue);
+	this.imagedata.data[arrayPosition+3] = Math.round(color.alpha);
 };

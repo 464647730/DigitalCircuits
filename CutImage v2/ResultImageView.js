@@ -1,6 +1,6 @@
 var ResultImageView = new View();
 ResultImageView.init = function() {
-	this.resultImageDiv = document.getElementById("resultImageView");
+	this.view = document.getElementById("resultImageView");
 	this.imageNode = document.getElementById("resultImageNode");
 	this.saveButton = document.getElementById("saveImage");
 	this.reSelectButton = document.getElementById("fromresultImageToSelectImage");
@@ -15,5 +15,5 @@ ResultImageView.init = function() {
 
 ResultImageView.beforeDisplay = function() {
 	this.resultImage = this.receivedData["resultImageData"].toImage();
-	this.resultImageDiv.appendChild(this.resultImage);
+	this.imageNode.appendChild(this.resultImage);
 };
