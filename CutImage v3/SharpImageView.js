@@ -11,6 +11,13 @@ SharpImageView.init = function() {
 		that.handleImage(i);
 	});
 	this.scrollbar.insertInto(document.getElementById("select_bar"));
+
+	document.getElementById("do_sharp").addEventListener("click", function() {
+		that.gotoView(MainView);
+	}, false);
+	document.getElementById("sharp_image_quit").addEventListener("click", function() {
+		that.gotoView(MainView);
+	}, false);
 };
 
 SharpImageView.beforeDisplay = function() {
@@ -18,7 +25,7 @@ SharpImageView.beforeDisplay = function() {
 
 SharpImageView.handleImage = function(i) {
 	;
-}
+};
 
 
 

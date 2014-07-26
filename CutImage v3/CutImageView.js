@@ -16,7 +16,7 @@ CutImageView.init = function() {
 		console.log(globaldata.imagedata.id);
 		that.gotoView(MainView);
 	}, false);
-	document.getElementById("quit").addEventListener("click", function() {
+	document.getElementById("cut_image_quit").addEventListener("click", function() {
 		that.gotoView(MainView);
 	}, false);
 };

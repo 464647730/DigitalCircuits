@@ -20,10 +20,10 @@ MainView.init = function() {
                 that.gotoView(SharpImageView);
                 break;
             case "view_image":
-                that.gotoView(ViewImageView);
+                // that.gotoView(ViewImageView);
                 break;
             case "download":
-                that.download();
+                // that.download();
                 break;
             default:
         }
