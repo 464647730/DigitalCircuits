@@ -3,15 +3,17 @@
 <head>
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" type="text/css" href="index.css">
+	<script type="text/javascript" src="all.js"></script>
 	<script type="text/javascript" src="View.js"></script>
 	<script type="text/javascript" src="SelectImageView.js"></script>
 	<script type="text/javascript" src="SetQuadView.js"></script>
 	<script type="text/javascript" src="SetQuad.js"></script>
-	<script type="text/javascript" src="ResultImageView.js"></script>
 	<script type="text/javascript" src="SmartImageCuter.js"></script>
 	<script type="text/javascript" src="ImageCuter.js"></script>
 	<script type="text/javascript" src="MyImageData.js"></script>
+	<script type="text/javascript" src="ResultImageView.js"></script>
 	<script type="text/javascript" src="OtherDataTypes.js"></script>
+	<script type="text/javascript" src="GrayFilter.js"></script>
 	<script type="text/javascript">
 		window.addEventListener("DOMContentLoaded", function() {
 			SelectImageView.init();
@@ -36,7 +38,8 @@
 	<div id="resultImageView" class="view">
 		<div id="resultImageNode"></div>
 		<a id="saveImage" type="image/png">保存</a>
-		<button id="fromresultImageToSelectImage">重新选择图片</button>
+		<button id="toSselectImage">重新选择图片</button>
+		<button id="grayFilterView">灰度化图片</button>
 	</div>
 </body>
 </html>

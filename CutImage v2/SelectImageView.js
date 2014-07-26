@@ -20,6 +20,9 @@ SelectImageView.init = function() {
 		}
 		var fileReader = new FileReader();
 		fileReader.onload = function() {
+			if (that.image !== null) {
+				that.dispSelectedImageNode.removeChild(that.image);
+			}
 			that.image = new Image();
 			that.image.src = this.result;
 			that.dispSelectedImageNode.appendChild(that.image);

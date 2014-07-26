@@ -1,6 +1,8 @@
 // canvas提供的imagedata作为图像的数据部分。
 // 这里封装imagedata，以提供一些操作。
 var MyImageData = function(size) {
+	this.id = new Date().getTime();
+	this.isGray = false;
 	this.imagedata = null;
 	if (size !== undefined) {
 		this.createImageData(size);
@@ -23,6 +25,14 @@ MyImageData.prototype.setValueByImage = function(image) {
 	context.drawImage(image, 0, 0);
 	this.imagedata = context.getImageData(0, 0, canvas.width, canvas.height);;
 };
+MyImageData.prototype.setValueByDataURL = function(dataurl) {
+	var image = new Image();
+	var that = this;
+	image.onload = function() {
+		that.setValueByImage(image);
+	};
+	image.src = dataurl;
+};
 MyImageData.prototype.toImage = function() {
 	var image = new Image();
 	image.src = this.toDataURL();
@@ -42,11 +52,13 @@ MyImageData.prototype.createImageData = function(size) {
 	canvas.height = size.height;
 	this.imagedata = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
 };
-MyImageData.prototype.readImage = function(image) {
-	var canvas = document.createElement("canvas");
-}
 MyImageData.prototype.getImageData = function() {
 	return this.imagedata;
+};
+MyImageData.prototype.show = function(canvas) {
+	canvas.width = this.getWidth();
+	canvas.height = this.getHeight();
+	canvas.getContext("2d").putImageData(this.imagedata, 0, 0);
 };
 MyImageData.prototype.outOfBorder = function(position) {
 	if (position.x < 0 || position.x >= this.getWidth() || position.y < 0 || position.y >= this.getHeight()) {
@@ -67,7 +79,6 @@ MyImageData.prototype.getColorAtWholeCoordinate = function(position) {
 	color.alpha = this.imagedata.data[arrayPosition+3];
 	return color;
 };
-var c = 0;
 MyImageData.prototype.getColor = function(position) {
 	var color = new Color();
 	var p1 = new Point(Math.floor(position.x), Math.floor(position.y)),

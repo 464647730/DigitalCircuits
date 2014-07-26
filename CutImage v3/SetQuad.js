@@ -1,21 +1,3 @@
-function getElementLeft(element) {
-	var actualLeft = element.offsetLeft;
-	var current = element.offsetParent;
-	while (current !== null) {
-		actualLeft += current.offsetLeft;
-		current = current.offsetParent;
-	}
-	return actualLeft;
-}
-function getElementTop(element) {
-	var actualTop = element.offsetTop;
-	var current = element.offsetParent;
-	while (current !== null) {
-		actualTop += current.offsetTop;
-		current = current.offsetParent;
-	}
-	return actualTop;
-}
 function getDistance(x1, y1, x2, y2) {
 	return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
@@ -137,6 +119,7 @@ var SetQuad = function(canvas) {
 	this.relativePosition = { dx: 0, dy: 0 };
 	this.lastEvent = null;
 	this.keyPressed = false;
+	this.background = null;
 };
 SetQuad.MouseEventType = {
 	KEYDOWN: 0,
@@ -211,6 +194,7 @@ SetQuad.prototype.refresh = function() {
 };
 SetQuad.prototype.clearAll = function() {
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+	this.context.putImageData(this.background.imagedata, 0, 0);
 };
 SetQuad.prototype.drawQuad = function() {
 	this.context.beginPath();
@@ -317,13 +301,10 @@ SetQuad.prototype.leftBottomInLimit = function(x, y) {
 SetQuad.prototype.getQuad = function() {
 	return this.quad;
 };
-SetQuad.prototype.setImage = function(image) {
-	console.log(image.width);
-	console.log(image.height);
-	this.canvas.width = image.width;
-	this.canvas.height = image.height;
-	var url = "url(" + image.src + ")";
-	this.canvas.style.backgroundImage = url;
+SetQuad.prototype.setBackground = function(myimagedata) {
+	this.canvas.width = myimagedata.getWidth();
+	this.canvas.height = myimagedata.getHeight();
+	this.background = myimagedata;
 	this.setData();
 	this.refresh();
 };

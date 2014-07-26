@@ -1,0 +1,20 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<script type="text/javascript">
+		window.addEventListener("DOMContentLoaded", function() {
+			document.getElementById("load_image").addEventListener("click", function(event) {
+				var input = document.createElement("input");
+				input.setAttribute("type", "file");
+				var click = document.createEvent("MouseEvents");
+				click.initMouseEvent("click", false, false);
+				input.dispatchEvent(click);
+			}, false);
+		}, false);
+	</script>
+</head>
+<body>
+	<button id="load_image">Load Image</button>
+</body>
+</html>

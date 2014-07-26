@@ -1,0 +1,62 @@
+<!DOCTYPE>
+<html>
+<head>
+	<meta charset="utf-8"/>
+	<link rel="stylesheet" type="text/css" href="index.css">
+	<script type="text/javascript" src="all.js"></script>
+	<script type="text/javascript" src="View.js"></script>
+	<script type="text/javascript" src="MainView.js"></script>
+	<script type="text/javascript" src="CutImageView.js"></script>
+	<script type="text/javascript" src="SetQuad.js"></script>
+	<script type="text/javascript" src="SmartImageCuter.js"></script>
+	<script type="text/javascript" src="ImageCuter.js"></script>
+	<script type="text/javascript" src="MyImageData.js"></script>
+	<script type="text/javascript" src="SharpImageView.js"></script>
+	<script type="text/javascript" src="SelectBar.js"></script>
+	<script type="text/javascript" src="OtherDataTypes.js"></script>
+	<script type="text/javascript" src="GrayFilter.js"></script>
+	<script type="text/javascript">
+		window.addEventListener("DOMContentLoaded", function() {
+			MainView.init();
+			CutImageView.init();
+			SharpImageView.init();
+			MainView.show();
+		}, false);
+	</script>
+</head>
+<body>
+	<div id="MainView" class="view">
+		<canvas></canvas>
+		<div id="main_view_buttons">
+			<button cmd="load_image">Load Image</button>
+			<button cmd="cut_image">Cut Image</button>
+			<button cmd="gray_image">Gray</button>
+			<button cmd="sharp_image">Sharp</button>
+			<button cmd="view_image">View</button>
+			<button cmd="download">Download</button>
+		</div>
+	</div>
+	<div id="CutImageView" class="view">
+		<canvas id="set_quad_canvas"></canvas>
+		<div>
+			<button id="set_quad">确定</button>
+			<button id="quit">取消</button>
+		</div>
+	</div>
+	<div id="SharpImageView" class="view">
+		<canvas id="sharp_image_canvas"></canvas>
+		<div id="select_bar"></div>
+		<div>
+			<button id="set_quad">确定</button>
+			<button id="quit">取消</button>
+		</div>
+	</div>
+	<div id="ViewImageView" class="view">
+		<canvas></canvas>
+		<div>
+			<button id="set_quad">确定</button>
+			<button id="quit">取消</button>
+		</div>
+	</div>
+</body>
+</html>
