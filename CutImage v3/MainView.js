@@ -11,13 +11,19 @@ MainView.init = function() {
                 that.load_image();
                 break;
             case "cut_image":
-                that.gotoView(CutImageView);
+                if ("imagedata" in globaldata) {
+                    that.gotoView(CutImageView);
+                }
                 break;
             case "gray_image":
-                that.gray_image();
+                if ("imagedata" in globaldata) {
+                    that.gray_image();
+                }
                 break;
             case "sharp_image":
-                that.gotoView(SharpImageView);
+                if ("imagedata" in globaldata) {
+                    that.gotoView(SharpImageView);
+                }
                 break;
             case "view_image":
                 // that.gotoView(ViewImageView);
