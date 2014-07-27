@@ -4,7 +4,6 @@ CutImageView.init = function() {
 	this.view = document.getElementById("CutImageView");
 
 	this.setQuad = new SetQuad(document.getElementById("set_quad_canvas"));
-	this.setQuad.init();
 
 	var that = this;
 	document.getElementById("set_quad").addEventListener("click", function() {

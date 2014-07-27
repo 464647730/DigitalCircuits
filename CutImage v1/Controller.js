@@ -17,6 +17,7 @@ Controller.prototype.init = function() {
 	this.resultImageView = new ResultImageView();
 	this.resultImageView.init();
 	this.resultImageView.setController(this);
+	this.smartImageCuter = new SmartImageCuter();
 };
 Controller.prototype.start = function() {
 	this.startSelectImageView();

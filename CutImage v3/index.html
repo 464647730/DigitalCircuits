@@ -11,15 +11,20 @@
 	<script type="text/javascript" src="SmartImageCuter.js"></script>
 	<script type="text/javascript" src="ImageCuter.js"></script>
 	<script type="text/javascript" src="MyImageData.js"></script>
-	<script type="text/javascript" src="SharpImageView.js"></script>
-	<script type="text/javascript" src="SelectBar.js"></script>
 	<script type="text/javascript" src="OtherDataTypes.js"></script>
 	<script type="text/javascript" src="GrayFilter.js"></script>
+	<script type="text/javascript" src="SharpImageView.js"></script>
+	<script type="text/javascript" src="SelectBar.js"></script>
+	<script type="text/javascript" src="SharpFilter.js"></script>
+	<script type="text/javascript" src="ImageDataFilter.js"></script>
+	<script type="text/javascript" src="ViewImageView.js"></script>
+	<script type="text/javascript" src="Coordinate.js"></script>
 	<script type="text/javascript">
 		window.addEventListener("DOMContentLoaded", function() {
 			MainView.init();
 			CutImageView.init();
 			SharpImageView.init();
+			ViewImageView.init();
 			MainView.show();
 		}, false);
 	</script>
@@ -52,10 +57,9 @@
 		</div>
 	</div>
 	<div id="ViewImageView" class="view">
-		<canvas></canvas>
+		<canvas id="view_image_canvas"></canvas>
 		<div>
-			<button id="set_quad">确定</button>
-			<button id="quit">取消</button>
+			<button id="view_image_back">返回</button>
 		</div>
 	</div>
 </body>

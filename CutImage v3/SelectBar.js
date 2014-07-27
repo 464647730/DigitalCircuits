@@ -4,9 +4,8 @@ var SelectBar = function() {
 	this.curr = 0;
 	this.barWidth = 60;
 	this.barHeight = 30;
+	this.onSelectChange = null;
 };
-
-
 
 SelectBar.prototype.setItems = function(items) {
 	this.setElements(items);
@@ -43,6 +42,7 @@ SelectBar.prototype.setStyle = function() {
 };
 
 SelectBar.prototype.setAction = function(handler) {
+	this.onSelectChange = handler;
 	var that = this;
 	this.container.addEventListener("click", function(event) {
 		var no = event.target.getAttribute("no");
@@ -50,7 +50,7 @@ SelectBar.prototype.setAction = function(handler) {
 			that.itemBars[that.curr].style.backgroundColor = "";
 			that.curr = no;
 			that.itemBars[that.curr].style.backgroundColor = "blue";
-			handler(Number.parseInt(no));
+			that.onSelectChange(Number.parseInt(no));
 		}
 	}, false);
 };
@@ -59,7 +59,12 @@ SelectBar.prototype.insertInto = function(elem) {
 	elem.appendChild(this.container);
 };
 
-
+SelectBar.prototype.reset = function(i) {
+	this.itemBars[this.curr].style.backgroundColor = "";
+	this.curr = i;
+	this.itemBars[this.curr].style.backgroundColor = "blue";
+	this.onSelectChange(i);
+};
 
 
 

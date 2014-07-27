@@ -120,6 +120,8 @@ var SetQuad = function(canvas) {
 	this.lastEvent = null;
 	this.keyPressed = false;
 	this.background = null;
+
+	this.init();
 };
 SetQuad.MouseEventType = {
 	KEYDOWN: 0,

@@ -2,17 +2,22 @@ var SharpImageView = new View();
 
 SharpImageView.init = function() {
 	this.view = document.getElementById("SharpImageView");
-	this.scrollbar = new SelectBar();
+	this.canvas = document.getElementById("sharp_image_canvas");
+	this.selectBar = new SelectBar();
+	this.paramsList = ["未锐化", "锐化 1", "锐化 2", "锐化 3"];
+	this.sharps = new Array(this.paramsList.length);
+	this.curr = 0;
 
-	var paramsList = [1, 2, 3, 4, 5, 6, 7];
 	var that = this;
-	this.scrollbar.setItems(paramsList);
-	this.scrollbar.setAction(function(i) {
+	// 初始化选择栏
+	this.selectBar.setItems(this.paramsList);
+	this.selectBar.setAction(function(i) {
 		that.handleImage(i);
 	});
-	this.scrollbar.insertInto(document.getElementById("select_bar"));
+	this.selectBar.insertInto(document.getElementById("select_bar"));
 
 	document.getElementById("do_sharp").addEventListener("click", function() {
+		globaldata.imagedata = that.sharps[that.curr];
 		that.gotoView(MainView);
 	}, false);
 	document.getElementById("sharp_image_quit").addEventListener("click", function() {
@@ -21,10 +26,42 @@ SharpImageView.init = function() {
 };
 
 SharpImageView.beforeDisplay = function() {
+	// 清空this.sharps中的缓存数据
+	this.sharps = new Array(this.paramsList.length);
+	this.sharps[0] = globaldata.imagedata;
+	this.curr = 0;
+	// 重置选择栏
+	this.selectBar.reset(this.curr);
+	// 显示图像
+	this.sharps[this.curr].show(this.canvas);
 };
 
 SharpImageView.handleImage = function(i) {
-	;
+	// 如果已处理过，不必再次处理。
+	if (this.sharps[i] !== undefined) {
+		if (this.curr !== i) {
+			this.curr = i;
+			this.sharps[this.curr].show(this.canvas);
+		}
+		return;
+	}
+	var mask;
+	switch (i) {
+		case 1:
+			mask = SharpFilter.Laplacian1;
+			break;
+		case 2:
+			mask = SharpFilter.Laplacian2;
+			break;
+		case 3:
+			mask = SharpFilter.Laplacian3;
+			break;
+		default:
+			return;
+	}
+	this.sharps[i] = SharpFilter.filter(globaldata.imagedata, mask);
+	this.curr = i;
+	this.sharps[this.curr].show(this.canvas);
 };
 
 

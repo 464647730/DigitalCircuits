@@ -122,8 +122,13 @@ MyImageData.prototype.getColor = function(position) {
 };
 MyImageData.prototype.setColor = function(p, color) {
 	var arrayPosition = (p.y * this.getWidth() + p.x) * 4;
-	this.imagedata.data[arrayPosition] = Math.round(color.red);
-	this.imagedata.data[arrayPosition+1] = Math.round(color.green);
-	this.imagedata.data[arrayPosition+2] = Math.round(color.blue);
-	this.imagedata.data[arrayPosition+3] = Math.round(color.alpha);
+	/*
+	 * 这里color中的数据是一个实数，可能超出0~255的范围，我们应该进行转化
+	 * 但实际上，imagedada.data是Uint8ClampedArray格式数组，可以自动转化
+	 * 这里就不必预先转化
+	 */
+	this.imagedata.data[arrayPosition] = color.red;
+	this.imagedata.data[arrayPosition+1] = color.green;
+	this.imagedata.data[arrayPosition+2] = color.blue;
+	this.imagedata.data[arrayPosition+3] = color.alpha;
 };

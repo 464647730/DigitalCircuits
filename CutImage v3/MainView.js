@@ -26,7 +26,9 @@ MainView.init = function() {
                 }
                 break;
             case "view_image":
-                // that.gotoView(ViewImageView);
+                if ("imagedata" in globaldata) {
+                    that.gotoView(ViewImageView);
+                }
                 break;
             case "download":
                 // that.download();
@@ -71,7 +73,6 @@ MainView.gray_image = function() {
 };
 MainView.beforeDisplay = function() {
     if ("imagedata" in globaldata) {
-        console.log(globaldata.imagedata.id);
         globaldata.imagedata.show(this.canvas);
     }
 };
