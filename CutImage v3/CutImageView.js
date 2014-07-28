@@ -8,11 +8,8 @@ CutImageView.init = function() {
 	var that = this;
 	document.getElementById("set_quad").addEventListener("click", function() {
 		var quad = that.setQuad.getQuad();
-		console.log(globaldata.imagedata.id);
-		var resultImageData = SmartImageCuter.cut(globaldata.imagedata, quad[0], quad[1], quad[2], quad[3]);
-		console.log(resultImageData.id);
-		globaldata.imagedata = resultImageData;
-		console.log(globaldata.imagedata.id);
+		var resultImageData = SmartImageCuter.cut(globaldata.history.curr(), quad[0], quad[1], quad[2], quad[3]);
+		globaldata.history.add(resultImageData);
 		that.gotoView(MainView);
 	}, false);
 	document.getElementById("cut_image_quit").addEventListener("click", function() {
@@ -21,6 +18,6 @@ CutImageView.init = function() {
 };
 
 CutImageView.beforeDisplay = function() {
-	this.setQuad.setBackground(globaldata.imagedata);
+	this.setQuad.setBackground(globaldata.history.curr());
 };
 

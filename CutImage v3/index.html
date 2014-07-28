@@ -4,6 +4,7 @@
 	<meta charset="utf-8"/>
 	<link rel="stylesheet" type="text/css" href="index.css">
 	<script type="text/javascript" src="all.js"></script>
+	<script type="text/javascript" src="History.js"></script>
 	<script type="text/javascript" src="View.js"></script>
 	<script type="text/javascript" src="MainView.js"></script>
 	<script type="text/javascript" src="CutImageView.js"></script>
@@ -31,14 +32,16 @@
 </head>
 <body>
 	<div id="MainView" class="view">
-		<canvas></canvas>
+		<canvas id="display_canvas"></canvas>
 		<div id="main_view_buttons">
-			<button cmd="load_image">Load Image</button>
-			<button cmd="cut_image">Cut Image</button>
-			<button cmd="gray_image">Gray</button>
-			<button cmd="sharp_image">Sharp</button>
-			<button cmd="view_image">View</button>
-			<button cmd="download">Download</button>
+			<button cmd="load_image">打开本地图片</button>
+			<button cmd="cut_image">切割图片</button>
+			<button cmd="gray_image">灰度化</button>
+			<button cmd="sharp_image">锐化</button>
+			<button cmd="view_image">在坐标系中查看</button>
+			<button cmd="back">撤销</button>
+			<button cmd="forward">重做</button>
+			<button cmd="download">下载</button>
 		</div>
 	</div>
 	<div id="CutImageView" class="view">

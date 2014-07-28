@@ -240,8 +240,11 @@ SetQuad.onLineLeft = function(A, B, C) {
 		return false;
 	}
 };
+SetQuad.inside = function(x, y, left, right, top, bottom) {
+	return x >= left && x < right && y >= top && y < bottom;
+};
 SetQuad.prototype.inLimit = function(which, x, y) {
-	var inLimit = this.inside(x, y) && this.farEnough(which, x, y);
+	var inLimit = this.farEnough(which, x, y);
 	if (inLimit === false) {
 		return false;
 	}
@@ -262,9 +265,6 @@ SetQuad.prototype.inLimit = function(which, x, y) {
 	}
 	return inLimit;
 };
-SetQuad.prototype.inside = function(x, y) {
-	return (x >= 0 && x < this.canvas.width && y >= 0 && y < this.canvas.height);
-};
 SetQuad.prototype.farEnough = function(which, x, y) {
 	var i, len = this.quad.length, radiusX2 = this.areaList[0].area.radius * 2;
 	for (i = 0; i < len; i++) {
@@ -278,24 +278,36 @@ SetQuad.prototype.farEnough = function(which, x, y) {
 };
 SetQuad.prototype.leftTopInLimit = function(x, y) {
 	var p = new Point(x, y);
+	if (SetQuad.inside(x, y, 0, this.quad[1].x, 0, this.quad[3].y) === false) {
+		return false;
+	}
 	return (SetQuad.onLineLeft(this.quad[3], this.quad[2], p)
 		&& SetQuad.onLineLeft(this.quad[2], this.quad[1], p)
 		&& SetQuad.onLineLeft(this.quad[3], this.quad[1], p));
 };
 SetQuad.prototype.rightTopInLimit = function(x, y) {
 	var p = new Point(x, y);
+	if (SetQuad.inside(x, y, this.quad[0].x, this.canvas.width, 0, this.quad[2].y) === false) {
+		return false;
+	}
 	return (SetQuad.onLineLeft(this.quad[0], this.quad[3], p)
 		&& SetQuad.onLineLeft(this.quad[3], this.quad[2], p)
 		&& SetQuad.onLineLeft(this.quad[0], this.quad[2], p));
 };
 SetQuad.prototype.rightBottomInLimit = function(x, y) {
 	var p = new Point(x, y);
+	if (SetQuad.inside(x, y, this.quad[3].x, this.canvas.width, this.quad[1].y, this.canvas.height) === false) {
+		return false;
+	}
 	return (SetQuad.onLineLeft(this.quad[1], this.quad[0], p)
 		&& SetQuad.onLineLeft(this.quad[0], this.quad[3], p)
 		&& SetQuad.onLineLeft(this.quad[1], this.quad[3], p));
 };
 SetQuad.prototype.leftBottomInLimit = function(x, y) {
 	var p = new Point(x, y);
+	if (SetQuad.inside(x, y, 0, this.quad[2].x, this.quad[1].y, this.canvas.height) === false) {
+		return false;
+	}
 	return (SetQuad.onLineLeft(this.quad[2], this.quad[1], p)
 		&& SetQuad.onLineLeft(this.quad[1], this.quad[0], p)
 		&& SetQuad.onLineLeft(this.quad[2], this.quad[0], p));

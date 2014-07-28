@@ -2,7 +2,9 @@ var MainView = new View();
 
 MainView.init = function() {
     this.view = document.getElementById("MainView");
-    this.canvas = this.view.getElementsByTagName("canvas")[0];
+    this.canvas =  document.getElementById("display_canvas");
+
+    globaldata.history = new History();
 
     var that = this;
     document.getElementById("main_view_buttons").addEventListener("click", function(event) {
@@ -11,27 +13,39 @@ MainView.init = function() {
                 that.load_image();
                 break;
             case "cut_image":
-                if ("imagedata" in globaldata) {
+                if (!globaldata.history.isEmpty()) {
                     that.gotoView(CutImageView);
                 }
                 break;
             case "gray_image":
-                if ("imagedata" in globaldata) {
+                if (!globaldata.history.isEmpty()) {
                     that.gray_image();
                 }
                 break;
             case "sharp_image":
-                if ("imagedata" in globaldata) {
+                if (!globaldata.history.isEmpty()) {
                     that.gotoView(SharpImageView);
                 }
                 break;
             case "view_image":
-                if ("imagedata" in globaldata) {
+                if (!globaldata.history.isEmpty()) {
                     that.gotoView(ViewImageView);
                 }
                 break;
+            case "back":
+                if (!globaldata.history.isEmpty()) {
+                    that.back();
+                }
+                break;
+            case "forward":
+                if (!globaldata.history.isEmpty()) {
+                    that.forward();
+                }
+                break;
             case "download":
-                // that.download();
+                if (!globaldata.history.isEmpty()) {
+                    that.download();
+                }
                 break;
             default:
         }
@@ -46,9 +60,10 @@ MainView.load_image_handler = function(target) {
     fileReader.onload = function() {
         var image = new Image();
         image.onload = function () {
-            globaldata.imagedata = new MyImageData();
-            globaldata.imagedata.setValueByImage(this);
-            globaldata.imagedata.show(that.canvas);
+            var imagedata = new MyImageData();
+            imagedata.setValueByImage(this);
+            globaldata.history.add(imagedata);
+            globaldata.history.curr().show(that.canvas);
         };
         image.src = this.result;
     };
@@ -66,13 +81,31 @@ MainView.load_image = function() {
     fileinput.dispatchEvent(click);
 };
 MainView.gray_image = function() {
-    if ("imagedata" in globaldata) {
-        GrayFilter.filter(globaldata.imagedata);
-        globaldata.imagedata.show(this.canvas);
+    var grayimage = GrayFilter.filter(globaldata.history.curr());
+    if (grayimage !== null) {
+        globaldata.history.add(grayimage);
+        globaldata.history.curr().show(this.canvas);
     }
 };
 MainView.beforeDisplay = function() {
-    if ("imagedata" in globaldata) {
-        globaldata.imagedata.show(this.canvas);
+    if (!globaldata.history.isEmpty()) {
+        globaldata.history.curr().show(this.canvas);
     }
+};
+MainView.download = function() {
+    var a = document.createElement("a");
+    a.href = globaldata.history.curr().toDataURL();
+    var filename = "数字图像_" + new Date().toLocaleString() + ".png";
+    a.setAttribute("download", filename);
+    var click = document.createEvent("MouseEvent");
+    click.initMouseEvent("click");
+    a.dispatchEvent(click);
+};
+MainView.back = function() {
+    globaldata.history.back();
+    globaldata.history.curr().show(this.canvas);
+};
+MainView.forward = function() {
+    globaldata.history.forward();
+    globaldata.history.curr().show(this.canvas);
 };

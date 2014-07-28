@@ -11,7 +11,7 @@ ViewImageView.init = function() {
 };
 
 ViewImageView.beforeDisplay = function() {
-	this.coordinate.setContent(globaldata.imagedata.imagedata);
+	this.coordinate.setContent(globaldata.history.curr().imagedata);
 };
 
 

@@ -17,7 +17,7 @@ SharpImageView.init = function() {
 	this.selectBar.insertInto(document.getElementById("select_bar"));
 
 	document.getElementById("do_sharp").addEventListener("click", function() {
-		globaldata.imagedata = that.sharps[that.curr];
+		globaldata.history.add(that.sharps[that.curr]);
 		that.gotoView(MainView);
 	}, false);
 	document.getElementById("sharp_image_quit").addEventListener("click", function() {
@@ -28,7 +28,7 @@ SharpImageView.init = function() {
 SharpImageView.beforeDisplay = function() {
 	// 清空this.sharps中的缓存数据
 	this.sharps = new Array(this.paramsList.length);
-	this.sharps[0] = globaldata.imagedata;
+	this.sharps[0] = globaldata.history.curr();
 	this.curr = 0;
 	// 重置选择栏
 	this.selectBar.reset(this.curr);
@@ -59,7 +59,7 @@ SharpImageView.handleImage = function(i) {
 		default:
 			return;
 	}
-	this.sharps[i] = SharpFilter.filter(globaldata.imagedata, mask);
+	this.sharps[i] = SharpFilter.filter(this.sharps[0], mask);
 	this.curr = i;
 	this.sharps[this.curr].show(this.canvas);
 };
