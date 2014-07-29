@@ -1,12 +1,18 @@
+/*
+ * 锐化页面
+ * 一个canvas用于展示处理后的图片
+ * 一个选择栏，用于选择一种锐化算子，根据不同锐化算子可得到不同锐化结果图
+ */
+
 var SharpImageView = new View();
 
 SharpImageView.init = function() {
 	this.view = document.getElementById("SharpImageView");
 	this.canvas = document.getElementById("sharp_image_canvas");
-	this.selectBar = new SelectBar();
-	this.paramsList = ["未锐化", "锐化 1", "锐化 2", "锐化 3"];
-	this.sharps = new Array(this.paramsList.length);
-	this.curr = 0;
+	this.selectBar = new SelectBar(); // 选择栏
+	this.paramsList = ["未锐化", "锐化 1", "锐化 2", "锐化 3"]; // 选择栏的多个选项
+	this.sharps = new Array(this.paramsList.length); // 处理结果缓存
+	this.curr = 0; // 当先显示的处理结果编号
 
 	var that = this;
 	// 初始化选择栏

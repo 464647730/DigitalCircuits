@@ -1,22 +1,28 @@
-// canvas提供的imagedata作为图像的数据部分。
-// 这里封装imagedata，以提供一些操作。
+/*
+ * 自定义图像数据
+ * 封装canvas的imagedata类，并提供更多的参数内核方法
+ */
+
 var MyImageData = function(size) {
-	this.id = new Date().getTime();
-	this.isGray = false;
-	this.imagedata = null;
-	if (size !== undefined) {
+	this.isGray = false; // 是否是灰度图
+	this.imagedata = null; // 图像数据，包含了图像像素数据和尺寸
+	if (size !== undefined) { // 如果有size参数，则创建size尺寸的imagedata
 		this.createImageData(size);
 	}
 };
+// 获取图像宽度
 MyImageData.prototype.getWidth = function() {
 	return this.imagedata.width;
 };
+// 获取图像高度
 MyImageData.prototype.getHeight = function() {
 	return this.imagedata.height;
 };
+// 由imagedata设置图像数据
 MyImageData.prototype.setValueByImageData = function(newImageData) {
 	this.imagedata = newImageData;
 };
+// 由Image对象设置图像数据
 MyImageData.prototype.setValueByImage = function(image) {
 	var canvas = document.createElement("canvas");
 	canvas.width = image.width;
@@ -25,6 +31,7 @@ MyImageData.prototype.setValueByImage = function(image) {
 	context.drawImage(image, 0, 0);
 	this.imagedata = context.getImageData(0, 0, canvas.width, canvas.height);;
 };
+// 由dataurl设置图像数据
 MyImageData.prototype.setValueByDataURL = function(dataurl) {
 	var image = new Image();
 	var that = this;
@@ -33,11 +40,13 @@ MyImageData.prototype.setValueByDataURL = function(dataurl) {
 	};
 	image.src = dataurl;
 };
+// 转化为Image对象
 MyImageData.prototype.toImage = function() {
 	var image = new Image();
 	image.src = this.toDataURL();
 	return image;
 };
+// 转化为dataurl
 MyImageData.prototype.toDataURL = function() {
 	var canvas = document.createElement("canvas");
 	canvas.width = this.imagedata.width;
@@ -46,20 +55,24 @@ MyImageData.prototype.toDataURL = function() {
 	context.putImageData(this.imagedata, 0, 0);
 	return canvas.toDataURL("image/png");
 };
+// 新建imagedata
 MyImageData.prototype.createImageData = function(size) {
 	var canvas = document.createElement("canvas");
 	canvas.width = size.width;
 	canvas.height = size.height;
 	this.imagedata = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
 };
+// 获取imagedata
 MyImageData.prototype.getImageData = function() {
 	return this.imagedata;
 };
+// 在canvas中显示
 MyImageData.prototype.show = function(canvas) {
 	canvas.width = this.getWidth();
 	canvas.height = this.getHeight();
 	canvas.getContext("2d").putImageData(this.imagedata, 0, 0);
 };
+// 判断一点是否超出图像边界
 MyImageData.prototype.outOfBorder = function(position) {
 	if (position.x < 0 || position.x >= this.getWidth() || position.y < 0 || position.y >= this.getHeight()) {
 		return true;
@@ -67,6 +80,7 @@ MyImageData.prototype.outOfBorder = function(position) {
 		return false;
 	}
 };
+// 获取图像某一整数点的像素值
 MyImageData.prototype.getColorAtWholeCoordinate = function(position) {
 	if (this.outOfBorder(position)) {
 		return new Color(0, 0, 0, 255);
@@ -79,6 +93,8 @@ MyImageData.prototype.getColorAtWholeCoordinate = function(position) {
 	color.alpha = this.imagedata.data[arrayPosition+3];
 	return color;
 };
+// 获取任意点的像素值
+// 如果坐标不是整点，则使用双线性插值法获取该坐标处的像素值
 MyImageData.prototype.getColor = function(position) {
 	var color = new Color();
 	var p1 = new Point(Math.floor(position.x), Math.floor(position.y)),
@@ -120,6 +136,7 @@ MyImageData.prototype.getColor = function(position) {
 	}
 	return color;
 };
+// 设置某一点处的像素值
 MyImageData.prototype.setColor = function(p, color) {
 	var arrayPosition = (p.y * this.getWidth() + p.x) * 4;
 	/*

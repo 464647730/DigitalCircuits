@@ -1,3 +1,9 @@
+/*
+ * 图像卷积
+ * 输入一副图像和一个算子
+ * 将图像与算子进行卷积运算
+ * 返回结果图像
+ */
 var ImageDataFilter = {};
 
 // 3x3卷积运算模板。由于只用到了3x3卷积，这里就不考取其他尺寸的卷积了。
@@ -8,6 +14,7 @@ ImageDataFilter.template3 = function(myimagedata, mask) {
 	var data = myimagedata.imagedata.data;
 	// 卷积运算必须新建图像，不能在原图像中操作
 	var result = new MyImageData(new Size(width, height));
+	result.isGray = myimagedata.isGray; // 如果原图是灰度图，结果图像也是灰度图
 	var resultdata = result.imagedata.data;
 	var i, j, box, center, pixel;
 	// 每个位置距离中心的偏移。这里预先计算，以减轻循环中的计算量

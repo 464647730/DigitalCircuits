@@ -1,3 +1,7 @@
+/*
+ * 定义全局量globaldata
+ * 定义一些多处使用的函数
+ */
 var globaldata = {};
 
 function getElementLeft(element) {

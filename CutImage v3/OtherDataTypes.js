@@ -1,3 +1,6 @@
+/*
+三个数据结构，分别是Point，Color和Size，被其他js文件使用。
+*/
 var Point = function(x, y) {
 	this.x = x; this.y = y;
 };
@@ -10,7 +13,3 @@ var Size = function(width, height) {
 	this.width = width; this.height = height;
 };
 
-var Vector = function(x, y) {
-	this.x = x;
-	this.y = y;
-};

@@ -1,6 +1,18 @@
+/*
+ * SetQuad类及其相关类
+ */
+
+/*
+ * 计算两点距离
+ */
 function getDistance(x1, y1, x2, y2) {
 	return Math.sqrt((x1-x2)*(x1-x2)+(y1-y2)*(y1-y2));
 }
+
+/*
+ * 圆形区域类
+ * 指定一个圆形区域，判断一个点是否在该区域内
+ */
 var CircleArea = function(centerX, centerY, radius) {
 	this.centerX = centerX;
 	this.centerY = centerY;
@@ -15,29 +27,40 @@ CircleArea.prototype.inArea = function(x, y) {
 };
 
 /*
- * 如果Action是NOTHING，则界面不需要刷新
- * 如果Action是DRAG，则有可能刷新
- * 如果是其他，则界面需要刷新
+ * Action枚举
+ * 定义了6种自定义的用户动作
+ * 动作将导致区域状态的变化
+ * 一旦变化发生，就需要重画canvas，以产生动画效果
  */
 var Action = {
-	NOTHING: 0, // 没有状态变化
+	NOTHING: 0, // 没有有意义的动作发生
 	ENTER: 1, // 鼠标进入区域
-	LEAVE: 2, // 鼠标在非DRAGGING状态下离开区域
-	PICK: 3, // 鼠标在区域内，且按下按键
-	DRAG: 4, // 发生在PICK之后，鼠标按键按下
-	DROP: 5 // 发生在DRAG之后，鼠标按键释放
+	LEAVE: 2, // 鼠标离开区域
+	PICK: 3, // 鼠标在区域内按下按键
+	DRAG: 4, // 鼠标拖动一个区域
+	DROP: 5 // 鼠标按键释放，放下一个区域
 };
 
 var ListeningArea = function(area) {
-	this.area = area; // 监听区域
+	this.area = area; // 监听的区域
 	this.lastState = ListeningArea.State.START; // 初始状态
 };
+/*
+ * 定义区域的四种状态
+ * 发生动作会改变状态
+ * 状态改变后需要刷新canvas
+ */
 ListeningArea.State = {
-	START: 0, // 初始状态，仅仅在初始化时赋值。它的本质意义是，我们不知道此时的真实状态。
-	INSIDE: 1, // 鼠标位于区域内部，并且鼠标按键没有按下
-	OUTSIDE: 2, // 鼠标位于区域外，但是鼠标按键无法判断
-	DRAGGING: 3 // 鼠标按键已经按下，但是是否在区域内无法判断
+	START: 0, // 初始状态，仅仅在初始化时赋值，之后再不可能进入此状态。
+	INSIDE: 1, // 鼠标位于区域内部
+	OUTSIDE: 2, // 鼠标位于区域外
+	DRAGGING: 3 // 鼠标正在拖动该区域
 };
+/*
+ * 输入当前鼠标的位置和按键状态
+ * 与之前的状态对比，判断何种动作发生
+ * 返回动作
+ */
 ListeningArea.prototype.detectActionAndUpdateState = function(x, y, keyPressed) {
 	var inside = this.area.inArea(x, y);
 	var action;
@@ -83,6 +106,10 @@ ListeningArea.prototype.detectActionAndUpdateState = function(x, y, keyPressed) 
 	this.updateState(inside, action);
 	return action;
 };
+/*
+ * 输入发生的动作，以及鼠标是否在区域内的判断
+ * 更新区域状态
+ */
 ListeningArea.prototype.updateState = function(isInside, action) {
 	switch (action) {
 		case Action.NOTHING:
@@ -106,11 +133,27 @@ ListeningArea.prototype.updateState = function(isInside, action) {
 		default:
 	}
 };
+/*
+ * 更新区域位置
+ */
 ListeningArea.prototype.updatePosition = function(x, y) {
 	this.area.centerX = x;
 	this.area.centerY = y;
 };
 
+/*
+ * SetQuad类
+ * 输入一个canvas元素
+ * 为该元素添加事件监听，根据浏览器事件信息判断是否自定义动作，并根据动作重画canvas，产生动画效果
+ *
+ * 重要组成部分：
+ *     1. quad：四个顶点，确定了切割区域
+ *     2. areaList：四个圆形区域，这是四个顶点的表示。用户可以拖动这四个圆来移动四个顶点
+ *     3. background：背景，用于提供参考
+ *
+ * 在canvas中绘制出背景，然后绘制出四个圆，表示四个顶点，和一个由四个顶点确定的四边形，表示切割区域
+ * 圆是可交互的，用户可以用鼠标拖动，以修改顶点的位置
+ */
 var SetQuad = function(canvas) {
 	this.canvas = canvas;
 	this.context = this.canvas.getContext("2d");
@@ -123,6 +166,9 @@ var SetQuad = function(canvas) {
 
 	this.init();
 };
+/*
+ * 鼠标事件枚举
+ */
 SetQuad.MouseEventType = {
 	KEYDOWN: 0,
 	KEYUP: 1,
@@ -130,6 +176,7 @@ SetQuad.MouseEventType = {
 };
 SetQuad.prototype.init = function() {
 	var that = this;
+	// 监听鼠标事件
 	this.canvas.addEventListener("mousemove", function(event) {
 		that.eventHandler(event, SetQuad.MouseEventType.MOVE);
 	}, false);
@@ -140,6 +187,10 @@ SetQuad.prototype.init = function() {
 		that.eventHandler(event, SetQuad.MouseEventType.KEYUP);
 	}, false);
 };
+
+/*
+ * 设置初始切割区域
+ */
 SetQuad.prototype.setData = function() {
 	this.quad[0] = new Point(this.canvas.width * 0.25, this.canvas.height * 0.25);
 	this.quad[1] = new Point(this.canvas.width * 0.75, this.canvas.height * 0.25);
@@ -150,6 +201,13 @@ SetQuad.prototype.setData = function() {
 	this.areaList[2] = new ListeningArea(new CircleArea(this.quad[2].x, this.quad[2].y, 10));
 	this.areaList[3] = new ListeningArea(new CircleArea(this.quad[3].x, this.quad[3].y, 10));
 };
+
+/*
+ * 鼠标事件处理函数
+ * 输入鼠标事件
+ * 判定自定义动作
+ * 根据动作更新数据和canvas
+ */
 SetQuad.prototype.eventHandler = function(event, mouseeventtype) {
 	var x = event.pageX - getElementLeft(this.canvas);
 	var y = event.pageY - getElementTop(this.canvas);
@@ -166,6 +224,9 @@ SetQuad.prototype.eventHandler = function(event, mouseeventtype) {
 		this.updateQuad(i, x, y, action);
 	}
 };
+/*
+ * 更新切割区域
+ */
 SetQuad.prototype.updateQuad = function(which, x, y, action) {
 	if (action === Action.NOTHING) {
 		return;
@@ -185,6 +246,10 @@ SetQuad.prototype.updateQuad = function(which, x, y, action) {
 	}
 	this.refresh();
 };
+
+/*
+ * 刷新canvas
+ */
 SetQuad.prototype.refresh = function() {
 	this.clearAll();
 	this.drawQuad();
@@ -194,10 +259,18 @@ SetQuad.prototype.refresh = function() {
 		this.drawArea(this.areaList[i]);
 	}
 };
+
+/*
+ * 清空canvas，并绘制背景图
+ */
 SetQuad.prototype.clearAll = function() {
 	this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 	this.context.putImageData(this.background.imagedata, 0, 0);
 };
+
+/*
+ * 绘制四边形
+ */
 SetQuad.prototype.drawQuad = function() {
 	this.context.beginPath();
 	this.context.moveTo(this.quad[0].x, this.quad[0].y);
@@ -209,6 +282,9 @@ SetQuad.prototype.drawQuad = function() {
 	this.context.strokeStyle = "#0066cc";
 	this.context.stroke();
 };
+/*
+ * 绘制四个圆形区域
+ */
 SetQuad.prototype.drawArea = function(area) {
 	this.context.beginPath();
 	this.context.arc(area.area.centerX, area.area.centerY, area.area.radius, 0, Math.PI * 2, true);
@@ -232,6 +308,10 @@ SetQuad.prototype.drawArea = function(area) {
 		default:
 	}
 };
+/*
+ * 输入三个点
+ * 判断第三个点是否位于前两个点构成的线的左边
+ */
 SetQuad.onLineLeft = function(A, B, C) {
 	var result = (B.x - A.x) * (C.y - A.y) - (C.x - A.x) * (B.y - A.y);
 	if (result < 0) {
@@ -240,9 +320,17 @@ SetQuad.onLineLeft = function(A, B, C) {
 		return false;
 	}
 };
+/*
+ * 输入点的左边和左右上下边界
+ * 判断该点是否在边界内部
+ */
 SetQuad.inside = function(x, y, left, right, top, bottom) {
 	return x >= left && x < right && y >= top && y < bottom;
 };
+/*
+ * 切割区域只能是凸四边形，而且区域顶点不能位于图像外。因此，每个顶点的位置不能随意拖动，而必须在一个限制区域内部
+ * 输入顶点标号和顶点被拖动到的位置，判断这个位置是否是合理的
+ */
 SetQuad.prototype.inLimit = function(which, x, y) {
 	var inLimit = this.farEnough(which, x, y);
 	if (inLimit === false) {
@@ -265,6 +353,9 @@ SetQuad.prototype.inLimit = function(which, x, y) {
 	}
 	return inLimit;
 };
+/*
+ * 两个圆形区域不能交叉，因此需要判断下一个位置是否离其他区域足够远
+ */
 SetQuad.prototype.farEnough = function(which, x, y) {
 	var i, len = this.quad.length, radiusX2 = this.areaList[0].area.radius * 2;
 	for (i = 0; i < len; i++) {
@@ -276,6 +367,9 @@ SetQuad.prototype.farEnough = function(which, x, y) {
 	}
 	return true;
 };
+/*
+ * 分别判断四个顶点是否越界
+ */
 SetQuad.prototype.leftTopInLimit = function(x, y) {
 	var p = new Point(x, y);
 	if (SetQuad.inside(x, y, 0, this.quad[1].x, 0, this.quad[3].y) === false) {
@@ -312,9 +406,15 @@ SetQuad.prototype.leftBottomInLimit = function(x, y) {
 		&& SetQuad.onLineLeft(this.quad[1], this.quad[0], p)
 		&& SetQuad.onLineLeft(this.quad[2], this.quad[0], p));
 };
+/*
+ * 获取最终确定的切割区域
+ */
 SetQuad.prototype.getQuad = function() {
 	return this.quad;
 };
+/*
+ * 设置背景内容
+ */
 SetQuad.prototype.setBackground = function(myimagedata) {
 	this.canvas.width = myimagedata.getWidth();
 	this.canvas.height = myimagedata.getHeight();

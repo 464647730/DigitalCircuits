@@ -1,6 +1,13 @@
+/*
+ * 输入一副图像
+ * 返回一副灰度化的图像
+ *
+ * 如果已经是灰度图，返回null
+ */
+
 var GrayFilter = {};
 GrayFilter.filter = function(myImageData) {
-	if (myImageData.isGray) {
+	if (myImageData.isGray === true) {
 		return null;
 	}
 	var result = new MyImageData(new Size(myImageData.getWidth(), myImageData.getHeight()));

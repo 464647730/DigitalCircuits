@@ -1,3 +1,10 @@
+/*
+ * 选择栏
+ * 输入选择项列表
+ * 根据选择项列表绘制选择按钮
+ * 更改选择时触发change时间，调用用户设置的回调函数
+ */
+
 var SelectBar = function() {
 	this.container = null;
 	this.itemBars = null;
@@ -50,7 +57,7 @@ SelectBar.prototype.setAction = function(handler) {
 			that.itemBars[that.curr].style.backgroundColor = "";
 			that.curr = no;
 			that.itemBars[that.curr].style.backgroundColor = "blue";
-			that.onSelectChange(Number.parseInt(no));
+			that.onSelectChange(Number(no));
 		}
 	}, false);
 };

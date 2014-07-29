@@ -1,6 +1,13 @@
-// 工具类，不保存数据
-// 直接声明为对象，不必设计成类
+/*
+切图对象
+参数：
+	1. 图像
+	2. 切割区域
+	3. 目标图像大小
+返回值：切割后得到的图像
+*/
 var ImageCuter = {
+	// 切割
 	cut: function(myImageData, p1, p2, p3, p4, newSize) {
 		var resultImageData = new MyImageData(newSize);
 		var color, originPosition;
@@ -14,6 +21,7 @@ var ImageCuter = {
 		}
 		return resultImageData;
 	},
+	// 根据目标图片中的一个点获取它对应的原图上的点
 	getCorrespondingOriginPosition: function(p1, p2, p3, p4, newSize, x, y) {
 		var A = x / (newSize.width - 1), B = y / (newSize.height - 1);
 		var originPosition = new Point();

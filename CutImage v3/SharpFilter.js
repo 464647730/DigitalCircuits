@@ -1,3 +1,7 @@
+/*
+ * 锐化图像
+ * 提供三种锐化算子供用户选择
+ */
 var SharpFilter = {};
 SharpFilter.filter = function(myImageData, mask) {
 	return ImageDataFilter.template3(myImageData, mask);

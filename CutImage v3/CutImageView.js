@@ -1,8 +1,18 @@
+/*
+切图页面
+用户用鼠标指定将要切割出来的区域
+切割图片，返回主页面
+*/
 var CutImageView = new View();
 
 CutImageView.init = function() {
-	this.view = document.getElementById("CutImageView");
+	this.view = document.getElementById("CutImageView"); // 获取页面
 
+	/*
+	 * SetQuad实例
+	 * 修饰一个canvas元素，使之可以与用户交互
+	 * 以此可选定一个区域
+	 */
 	this.setQuad = new SetQuad(document.getElementById("set_quad_canvas"));
 
 	var that = this;

@@ -1,3 +1,10 @@
+/*
+ * 坐标绘制类
+ * 接受canvas，在该canvas中绘制坐标轴和方格
+ * 添加事件监听，使用户你可以拖动坐标系
+ * content：坐标系展示的内容
+ */
+
 var Coordinate = function(canvas) {
 	this.canvas = canvas;
 	this.context = this.canvas.getContext("2d");
@@ -15,6 +22,7 @@ var Coordinate = function(canvas) {
 	this.init();
 };
 
+// 初始化，添加事件监听
 Coordinate.prototype.init = function() {
 	var that = this;
 	this.canvas.addEventListener("mousedown", function(event) {
@@ -38,6 +46,7 @@ Coordinate.prototype.init = function() {
 	}, false);
 };
 
+// 设置展示内容
 Coordinate.prototype.setContent = function(content) {
 	// content是一个ImageData实例，是需要展示的内容
 	this.content = content;
@@ -51,6 +60,7 @@ Coordinate.prototype.setContent = function(content) {
 	this.refresh();
 };
 
+// 刷新canvas
 Coordinate.prototype.refresh = function() {
 	this.clear();
 	this.drawContent();
@@ -58,14 +68,17 @@ Coordinate.prototype.refresh = function() {
 	this.drawAxis();
 };
 
+// 清空canvas
 Coordinate.prototype.clear = function() {
 	this.context.clearRect(0, 0, this.width, this.height);
 };
 
+// 绘制展示内容
 Coordinate.prototype.drawContent = function() {
 	this.context.putImageData(this.content, this.borderWidth, this.borderWidth);
 }
 
+// 绘制横纵坐标轴
 Coordinate.prototype.drawAxis = function() {
 	this.context.beginPath();
 	// draw x axis
@@ -86,6 +99,7 @@ Coordinate.prototype.drawAxis = function() {
 	this.context.stroke();
 };
 
+// 绘制方格
 Coordinate.prototype.drawgGrids = function() {
 	this.context.beginPath();
 	var i, num;
