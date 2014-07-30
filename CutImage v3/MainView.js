@@ -83,6 +83,7 @@ MainView.load_image_handler = function(target) {
             imagedata.setValueByImage(this);
             globaldata.history.add(imagedata);
             globaldata.history.curr().show(that.canvas);
+            that.canvas.style.marginTop = (document.body.clientHeight * 0.9 - that.canvas.height) / 2 + "px";
         };
         image.src = this.result;
     };
@@ -122,6 +123,7 @@ MainView.beforeDisplay = function() {
     if (!globaldata.history.isEmpty()) {
         globaldata.history.curr().show(this.canvas);
     }
+    this.canvas.style.marginTop = (document.body.clientHeight * 0.9 - this.canvas.height) / 2 + "px";
 };
 
 /*

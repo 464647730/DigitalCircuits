@@ -40,6 +40,7 @@ SharpImageView.beforeDisplay = function() {
 	this.selectBar.reset(this.curr);
 	// 显示图像
 	this.sharps[this.curr].show(this.canvas);
+    this.canvas.style.marginTop = (document.body.clientHeight * 0.9 - this.canvas.height) / 2 + "px";
 };
 
 SharpImageView.handleImage = function(i) {

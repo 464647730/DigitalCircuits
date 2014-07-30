@@ -33,13 +33,13 @@
 </head>
 <body>
 	<div id="MainView" class="view">
-		<canvas id="display_canvas"></canvas>
+		<div><canvas id="display_canvas"></canvas></div>
 		<div id="main_view_buttons">
-			<button cmd="load_image">打开本地图片</button>
-			<button cmd="cut_image">切割图片</button>
+			<button cmd="load_image">打开图片</button>
+			<button cmd="cut_image">切割</button>
 			<button cmd="gray_image">灰度化</button>
 			<button cmd="sharp_image">锐化</button>
-			<button cmd="view_image">在坐标系中查看</button>
+			<button cmd="view_image">坐标系</button>
 			<button cmd="back">撤销</button>
 			<button cmd="forward">重做</button>
 			<button cmd="download">下载</button>
@@ -47,14 +47,14 @@
 		</div>
 	</div>
 	<div id="CutImageView" class="view">
-		<canvas id="set_quad_canvas"></canvas>
+		<div><canvas id="set_quad_canvas"></canvas></div>
 		<div>
 			<button id="set_quad">确定</button>
 			<button id="cut_image_quit">取消</button>
 		</div>
 	</div>
 	<div id="SharpImageView" class="view">
-		<canvas id="sharp_image_canvas"></canvas>
+		<div><canvas id="sharp_image_canvas"></canvas></div>
 		<div id="select_bar"></div>
 		<div>
 			<button id="do_sharp">确定</button>
@@ -62,7 +62,7 @@
 		</div>
 	</div>
 	<div id="ViewImageView" class="view">
-		<canvas id="view_image_canvas"></canvas>
+		<div><canvas id="view_image_canvas"></canvas></div>
 		<div>
 			<button id="view_image_back">返回</button>
 		</div>

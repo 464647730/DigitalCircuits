@@ -38,7 +38,7 @@ SelectBar.prototype.setStyle = function() {
 		bar = this.itemBars[i];
 		bar.style.width = this.barWidth + "px";
 		bar.style.height = this.barHeight + "px";
-		bar.style.float = "left";
+		bar.style.cssFloat = "left";
 		bar.style.textAlign = "center";
 		bar.style.lineHeight = this.barHeight + "px";
 	}

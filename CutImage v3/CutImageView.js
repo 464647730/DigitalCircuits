@@ -7,13 +7,14 @@ var CutImageView = new View();
 
 CutImageView.init = function() {
 	this.view = document.getElementById("CutImageView"); // 获取页面
+	this.canvas = document.getElementById("set_quad_canvas");
 
 	/*
 	 * SetQuad实例
 	 * 修饰一个canvas元素，使之可以与用户交互
 	 * 以此可选定一个区域
 	 */
-	this.setQuad = new SetQuad(document.getElementById("set_quad_canvas"));
+	this.setQuad = new SetQuad(this.canvas);
 
 	var that = this;
 	document.getElementById("set_quad").addEventListener("click", function() {
@@ -29,5 +30,6 @@ CutImageView.init = function() {
 
 CutImageView.beforeDisplay = function() {
 	this.setQuad.setBackground(globaldata.history.curr());
+    this.canvas.style.marginTop = (document.body.clientHeight * 0.9 - this.canvas.height) / 2 + "px";
 };
 
