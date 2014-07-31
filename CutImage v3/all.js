@@ -29,3 +29,14 @@ function clearElemChildren(element) {
 		element.removeChild(node);
 	}
 }
+
+function randstr(num) {
+	var len = this.chars.length;
+	var str = "";
+	var i;
+	for (i = 0; i < num; i++) {
+		str += this.chars.charAt(Math.floor(Math.random() * len));
+	}
+	return str;
+}
+randstr.chars = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";

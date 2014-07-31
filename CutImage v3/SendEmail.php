@@ -23,7 +23,7 @@ $img = base64_decode($base64);
 file_put_contents($filename, $img);
 
 $host = $_SERVER["HTTP_HOST"];
-$path = "/getImage.php";
+$path = "/GetImage.php";
 $request = $host . $path . "?filecode=" . $filecode;
 require_once("PHPMailer/PHPMailerAutoload.php");
 $me = "pic_handler@163.com";
