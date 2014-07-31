@@ -22,6 +22,8 @@
 	<script type="text/javascript" src="Coordinate.js"></script>
 	<script type="text/javascript" src="SendEmailView.js"></script>
 	<script type="text/javascript" src="Mailer.js"></script>
+	<script type="text/javascript" src="GetPhoneImageView.js"></script>
+	<script type="text/javascript" src="GetPhoneImage.js"></script>
 	<script type="text/javascript">
 		window.addEventListener("DOMContentLoaded", function() {
 			MainView.init();
@@ -29,6 +31,7 @@
 			SharpImageView.init();
 			ViewImageView.init();
 			SendEmailView.init();
+			GetPhoneImageView.init();
 			MainView.show();
 		}, false);
 	</script>
@@ -38,6 +41,7 @@
 		<div><canvas id="display_canvas"></canvas></div>
 		<div id="main_view_buttons">
 			<button cmd="load_image">打开图片</button>
+			<button cmd="load_phone_image">打开手机图片</button>
 			<button cmd="cut_image">切割</button>
 			<button cmd="gray_image">灰度化</button>
 			<button cmd="sharp_image">锐化</button>
@@ -74,8 +78,15 @@
 		<div>
 			<input id="email_address"/>
 			<button id="set_email_address">设置邮箱</button>
-			<button id="send_email">确定</button>
+			<button id="send_email">发送邮件</button>
 			<button id="send_email_back">返回</button>
+		</div>
+	</div>
+	<div id="GetPhoneImageView" class="view">
+		<div><canvas id="get_phone_image_canvas"></canvas></div>
+		<div>
+			<button id="get_phone_image_ok">已使用手机扫描</button>
+			<button id="get_phone_image_quit">取消</button>
 		</div>
 	</div>
 </body>

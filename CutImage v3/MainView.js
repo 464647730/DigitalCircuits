@@ -20,6 +20,9 @@ MainView.init = function() {
             case "load_image":
                 that.load_image();
                 break;
+			case "load_phone_image":
+				that.gotoView(GetPhoneImageView);
+				break;
             case "cut_image":
                 if (!globaldata.history.isEmpty()) {
                     that.gotoView(CutImageView);

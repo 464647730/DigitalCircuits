@@ -1,6 +1,4 @@
 var QRCodeDrawer = {
-	host: "http://jiyu1234.duapp.com",
-	url: null,
 	options: {
 		sideLength: 8,
 		typeNumber: -1,
@@ -8,13 +6,10 @@ var QRCodeDrawer = {
 		background: "#ffffff",
 		foreground: "#000000",
 	},
-	generateUrl: function() {
-		;
-	},
-	draw = function(canvas) {
+	drawContent: function(canvas, content) {
 		var qrcode = new QRCode(this.options.typeNumber, this.options.correctLevel);
 		this.generateUrl();
-		qrcode.addData(this.url);
+		qrcode.addData(drawContent);
 		qrcode.make();
 		
 		var num = qrcode.getModuleCount();
