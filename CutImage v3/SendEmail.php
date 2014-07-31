@@ -20,7 +20,7 @@ $img = base64_decode($base64);
 file_put_contents($filename, $img);
 
 require_once("PHPMailer/PHPMailerAutoload.php");
-$me = "pic_handler@126.com";
+$me = "pic_handler@163.com";
 $mail = new PHPMailer();
 $mail->isSMTP();
 $mail->Host = "smtp.163.com";
