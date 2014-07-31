@@ -11,7 +11,6 @@ MainView.init = function() {
     this.canvas =  document.getElementById("display_canvas"); // 显示当前图像的容器
 
     // MainView是第一个启动的页面，因此可以再这里初始化一些全局变量
-    globaldata.mailer = new Mailer(); // 用于发送邮件
     globaldata.history = new History(); // 用于记录操作历史
 
     var that = this;
@@ -58,7 +57,7 @@ MainView.init = function() {
                 break;
             case "send_email":
                 if (!globaldata.history.isEmpty()) {
-                    that.send_email();
+                    that.gotoView(SendEmailView);
                 }
                 break;
             default:
@@ -153,12 +152,4 @@ MainView.back = function() {
 MainView.forward = function() {
     globaldata.history.forward();
     globaldata.history.curr().show(this.canvas);
-};
-
-/*
-发送邮件到用户指定的邮箱，将目标图片作为附件。
-*/
-MainView.send_email = function() {
-    this.email.setData(globaldata.history.curr().toDataURL());
-    this.email.send();
 };
